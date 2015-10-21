@@ -1,95 +1,55 @@
 # Lab: Build a Continuous Delivery Pipeline with Jenkins and Kubernetes 
 
 ## Prerequisites
-1. A GitHub account
 1. A Google Cloud Platform Account
 
-## Prework - The easy way
-The easy prework configures a lab GCE instance with all tools installed and ready to go. Use this option if you have a Chromebook or aren't interested in configuring your workstation to perform the lab:
+## Do this first
+In this section you will start your [Google Cloud Shell](https://cloud.google.com/cloud-shell/docs/) and clone the lab code repository to it.
 
 1. Create a new Google Cloud Platform project: [https://console.developers.google.com/project](https://console.developers.google.com/project)
 
-1. Enable the **Google Container Engine** and **Google Compute Engine** APIs
+1. Click the Google Cloud Shell icon in the top-right and wait for your shell to open:
 
-1. Start a new GCE instane in the console with the following options:
+  ![](img/cloud-shell.png)
 
-  * **Zone**: us-central1-f
-  
-  * **Project access**: Allow API access to all Google Cloud services...
-  
-  * **Management > Automation > Startup script**:
-   
-    ```shell
-    #!/bin/bash
-    apt-get upgrade -y
-    apt-get install -y git
+  ![](img/cloud-shell-prompt.png)
 
-    # Configure gcloud
-    gcloud components update kubectl --quiet
-    ln -s /usr/local/share/google/google-cloud-sdk/bin/kubectl /usr/local/bin/kubectl
-
-    cat <<"EOF" > /etc/profile.d/gtc.sh
-    if [ ! -f "$HOME/.gtcinit" ]; then
-      echo "INITIALIZING INSTANCE FOR GTC LAB"
-      gcloud config set compute/zone us-central1-f
-
-      # Make project dir
-      if [ ! -d "$HOME/gtc" ]; then
-        mkdir -p $HOME/gtc 
-      fi
-
-      # Clone jenkins-kube-cd
-      if [ ! -d "$HOME/gtc/jenkins-kube-cd" ]; then
-        cd $HOME/gtc
-        git clone https://github.com/evandbrown/jenkins-kube-cd.git
-      fi
-
-      touch $HOME/.gtcinit
-    fi
-    EOF
-    ```
-
-1. SSH to the instance from the console. The tools and source you need for the lab will be configured and you will be placed in the `~/gtc` dir
-
-1. Go into the jenkins-kube-cd folder: `cd ~/gtc/jenkins-kube-cd`
-
-1. Run `gcloud compute instances list` to confirm things are working
-
-## Prework - The not easy, but not really that hard way
-If you choose this prework, you'll configure all of the tools for the lab on your workstation. You probably already have them: it's just `git`, `gcloud`, and `kubectl`. Then you'll clone a repo from GitHub:
-
-1. Create a new Google Cloud Platform project: [https://console.developers.google.com/project](https://console.developers.google.com/project)
-
-1. Enable the **Google Container Engine** and **Google Compute Engine** APIs
-
-1. Install `gcloud`: [https://cloud.google.com/sdk/](https://cloud.google.com/sdk/)
-
-1. Configure your project and zone: `gcloud config set project YOUR_PROJECT ; gcloud config set compute/zone us-central1-f`
-
-1. Enable `kubectl`: `gcloud components update kubectl`
-
-1. Clone the lab repository to your workstation:
+1. When the shell is open, set your default compute zone:
 
   ```shell
-  $ git clone https://github.com/evandbrown/jenkins-kube-cd.git
+  $ gcloud config set compute/zone us-central1-f
   ```
 
-## Optional shortcut
-In the upcoming steps you will use `gcloud` and `kubectl` to provision a Kubernetes cluster and deploy everything required to run Jenkins. If you don't want to copy/paste ~12 commands, you can simply run `./shortcut.sh` in the `jenkins-kube-cd` directory you just cloned. No one will judge you if you do. If you do this, you can skip down to [Connect to Jenkins](#connect-to-jenkins)
+1. Clone the lab repository in your cloud shell, then `cd` into that dir:
+
+  ```shell
+  $ git clone https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes.git
+  Cloning into 'continuous-deployment-on-kubernetes'...
+  ...
+
+  $ cd continuous-deployment-on-kubernetes
+  ```
 
 ##  Create a Kubernetes Cluster
-You'll use Google Container Engine to create and manage your Kubernetes cluster. Start by setting an env var with the cluster name, then provisioning it with `gcloud`:
-
+You'll use Google Container Engine to create and manage your Kubernetes cluster. Provision the cluster with `gcloud`:
 
 ```shell
-$ gcloud container clusters create gtc \
-  --scopes https://www.googleapis.com/auth/cloud-platform
+$ gcloud container clusters create cd \
+  --num-nodes 3 \
+  --machine-type g1-small \
+  --scopes "https://www.googleapis.com/auth/projecthosting,https://www.googleapis.com/auth/devstorage.full_control,https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/cloud-platform"
 ```
 
 Now you can confirm that the cluster is running and `kubectl` is working by listing pods:
 
 ```shell
 $ kubectl get pods
+```
+
+Add a quota to restrict how much of the cluster's compute and memory resources Jenkins can use:
+
+```shell
+kubectl create -f kubernetes/jenkins/quota.yaml
 ```
 
 An empty response is what you expect here.
@@ -134,18 +94,12 @@ jenkins-builder-9zttr   0/1       Pending   0          23s
 jenkins-leader-to8xg    1/1       Running   0          4h 
 ```
 
-Resize the build agent replication controller to contain 5 pods:
-
-```shell
-$ kubectl scale rc/jenkins-builder --replicas=5
-```
-
-Use `kubectl` to verify that 5 pods are running.
-
 ### Create a Nginx Replication Controller and Service
 The Nginx reverse proxy will be deployed (like the Jenkins server) as a replication controller with a service. The service will have a public load balancer associated.
 
-The nginx Replication Controller is defined in `kubernetes/jenkins/proxy.yaml`. You'll use the Kubernetes `secrets` API to create an `htpasswd` file that lets nginx enforce basic authentication.  Deploy the secrets and proxy to Kubernetes:
+The nginx Replication Controller is defined in `kubernetes/jenkins/proxy.yaml`. You'll use the Kubernetes `secrets` API to create an `htpasswd` file that lets nginx enforce basic authentication. You can also enable SSL or customize the default username or password. See [Enabling SSL or Basic Access Authentication](https://cloud.google.com/solutions/automated-build-images-with-jenkins-kubernetes#enabling_ssl_or_basic_access_authentication) for detailed instructions.
+
+Deploy the secrets and proxy to Kubernetes:
 
 ```shell
 $ kubectl create -f kubernetes/jenkins/ssl_secrets.yaml
@@ -165,18 +119,30 @@ $ kubectl create -f kubernetes/jenkins/service_proxy.yaml
 <a name="connect-to-jenkins"></a>
 ### Connect to Jenkins
 
-Now find the public IP address of your proxy service and open it in your web browser. The default username and password is `jenkins`:
+Now find the load balancer IP address of your proxy service (in the `LoadBalancer Ingress` field). **This field may take a few minutes to appear as the load balancer is being provisioned**: 
 
 ```shell
-$ kubectl get service/nginx-ssl-proxy
-NAME              LABELS                      SELECTOR                    IP(S)             PORT(S)
-nginx-ssl-proxy   name=nginx,role=ssl-proxy   name=nginx,role=ssl-proxy   10.95.241.75      443/TCP
-                                                                          173.255.118.210   80/TCP
+$  kubectl describe service/nginx-ssl-proxy
+Name:                   nginx-ssl-proxy
+Namespace:              default
+Labels:                 name=nginx,role=ssl-proxy
+Selector:               name=nginx,role=ssl-proxy
+Type:                   LoadBalancer
+IP:                     10.119.253.42
+LoadBalancer Ingress:   130.211.153.138 <-- This IP right here is what you want
+Port:                   https   443/TCP
+NodePort:               https   30139/TCP
+Endpoints:              10.116.0.9:443
+Port:                   http    80/TCP
+NodePort:               http    30355/TCP
+Endpoints:              10.116.0.9:80
+Session Affinity:       None
+No events.
 ```
 
-Copy down the URL of your Jenkins server and save it somewere. You'll be using it in upcoming sections.
+Open the load balancer's IP address in your web browser and sign in with the default Jenkins username and password(`jenkins:jenkins`).
 
-Spend a few minutes poking around Jenkins. You'll configure a build shortly...
+![](img/jenkins.png)
 
 ### Your progress, and what's next
 You've got a Kubernetes cluster managed by Google Container Engine. You've deployed:
@@ -186,10 +152,10 @@ You've got a Kubernetes cluster managed by Google Container Engine. You've deplo
 * a Nginx reverse-proxy replication controller that routes to the Jenkins service
 * a public service that exposes Nginx
 
-You have the tools to build a continuous delivery pipeline. Now you need a sample app to deliver continuously.
+You have the tools to build a continuous delivery pipeline. Now you need a sample app to deploy continuously.
 
 ## The sample app
-You'll use a very simple sample application - `gceme` - as the basis for your CD pipeline. `gceme` is written in Go and is locatd in the `sampleapp/gceme` directory in tihs repo. When you run the `gceme` binary on a GCE instance, it displays the instance's metadata in a pretty card:
+You'll use a very simple sample application - `gceme` - as the basis for your CD pipeline. `gceme` is written in Go and is located in the `sampleapp/gceme` directory in tihs repo. When you run the `gceme` binary on a GCE instance, it displays the instance's metadata in a pretty card:
 
 ![](img/info_card.png)
 
@@ -220,15 +186,23 @@ In this section you will deploy the `gceme` frontend and backend to Kubernetes u
 
 You'll have two environments - staging and production - and use Kubernetes namespaces to isolate them. 
 
-> **Important**: If you used the `shortcut.sh` script earlier, you still need to follow these steps.
-
 > **Note**: The manifest files for this section of the tutorial are in `kubernetes/gceme` in the `jenkins-kube-cd` repo. You are encouraged to open and read each one before creating it per the instructions.
 
 1. Create the namespaces:
 
-   `$ kubectl create -f kubernetes/gceme/namespace-staging.yaml`   
+  ```shell
+  $ kubectl create -f kubernetes/gceme/namespace-staging.yaml`   
 
-   `$ kubectl create -f kubernetes/gceme/namespace-prod.yaml`
+  $ kubectl create -f kubernetes/gceme/namespace-prod.yaml`
+  ```
+
+1. Create quotas for each namespace:
+
+  ```shell
+  $ kubectl create --namespace=staging kubernetes/gceme/quota.yaml
+
+  $ kubectl create --namespace=staging kubernetes/gceme/quota.yaml
+  ```
 
 1. Create the replication controllers and services for staging:
 
@@ -240,8 +214,6 @@ You'll have two environments - staging and production - and use Kubernetes names
 
     `$ kubectl --namespace=staging create -f kubernetes/gceme/backend.yaml`
     
-    `$ kubectl --namespace=staging scale rc/gceme-frontend --replicas=4`
-
 1. Repeat step 2, but for the `production` namespace:
 
     `$ kubectl --namespace=production create -f kubernetes/gceme/service_frontend.yaml`

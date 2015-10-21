@@ -37,6 +37,10 @@ spec:
       containers:
       - name: jenkins-builder
         image: gcr.io/cloud-solutions-images/jenkins-packer-agent:master-1f6b3f6
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
         command:
         - sh
         - -c
