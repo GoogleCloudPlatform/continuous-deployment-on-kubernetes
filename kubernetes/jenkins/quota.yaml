@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kind: "resourcequota"
+kind: "ResourceQuota"
 apiversion: "v1"
 metadata: 
   name: "default"
 spec: 
   hard: 
-    memory: "4gi"
+    memory: "4Gi"
     cpu: "2"
     pods: "10"
     services: "5"
