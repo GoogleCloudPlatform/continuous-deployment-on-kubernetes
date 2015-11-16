@@ -34,7 +34,7 @@ In this section you will start your [Google Cloud Shell](https://cloud.google.co
 You'll use Google Container Engine to create and manage your Kubernetes cluster. Provision the cluster with `gcloud`:
 
 ```shell
-$ gcloud container clusters create cd \
+$ gcloud container clusters create gtc \
   --num-nodes 3 \
   --machine-type g1-small \
   --scopes "https://www.googleapis.com/auth/projecthosting,https://www.googleapis.com/auth/devstorage.full_control,https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/cloud-platform"
