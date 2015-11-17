@@ -24,3 +24,4 @@ spec:
     services: 5
     replicationcontrollers: 20
     resourcequotas: 1
+
