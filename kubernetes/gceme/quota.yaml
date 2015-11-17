@@ -11,16 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-kind: "resourcequota"
-apiversion: "v1"
-metadata: 
-  name: "default"
-spec: 
-  hard: 
-    memory: "2gi"
-    cpu: "20"
-    pods: "200"
-    services: "5"
-    replicationcontrollers: "20"
-    resourcequotas: "1"
+
+kind: ResourceQuota
+apiversion: v1
+metadata:
+  name: default
+spec:
+  hard:
+    memory: 2Gi
+    cpu: 2
+    pods: 10
+    services: 5
+    replicationcontrollers: 20
+    resourcequotas: 1
