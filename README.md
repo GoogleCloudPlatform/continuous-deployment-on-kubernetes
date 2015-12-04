@@ -191,38 +191,45 @@ You'll have two environments - staging and production - and use Kubernetes names
 1. Create the namespaces:
 
   ```shell
-  $ kubectl create -f kubernetes/gceme/namespace-staging.yaml`   
+  $ kubectl create -f kubernetes/gceme/namespace-staging.yaml
 
-  $ kubectl create -f kubernetes/gceme/namespace-prod.yaml`
+  $ kubectl create -f kubernetes/gceme/namespace-prod.yaml
   ```
 
 1. Create quotas for each namespace:
 
   ```shell
-  $ kubectl create --namespace=staging kubernetes/gceme/quota.yaml
+  $ kubectl --namespace=staging create -f kubernetes/gceme/quota.yaml
 
-  $ kubectl create --namespace=staging kubernetes/gceme/quota.yaml
+  $ kubectl --namespace=production create -f kubernetes/gceme/quota.yaml
   ```
 
 1. Create the replication controllers and services for staging:
 
-    `$ kubectl --namespace=staging create -f kubernetes/gceme/service_frontend.yaml`
+    ```shell
+    $ kubectl --namespace=staging create -f kubernetes/gceme/service_frontend.yaml
 
-    `$ kubectl --namespace=staging create -f kubernetes/gceme/service_backend.yaml`
+    $ kubectl --namespace=staging create -f kubernetes/gceme/service_backend.yaml
 
-    `$ kubectl --namespace=staging create -f kubernetes/gceme/frontend.yaml`
+    $ kubectl --namespace=staging create -f kubernetes/gceme/frontend.yaml
 
-    `$ kubectl --namespace=staging create -f kubernetes/gceme/backend.yaml`
-    
-1. Repeat step 2, but for the `production` namespace:
+    $ kubectl --namespace=staging create -f kubernetes/gceme/backend.yaml
+    ```
+ 
+1. Repeat step 3, but for the `production` namespace:
 
-    `$ kubectl --namespace=production create -f kubernetes/gceme/service_frontend.yaml`
+    ```shell
+    $ kubectl --namespace=production create -f kubernetes/gceme/service_frontend.yaml
 
-    `$ kubectl --namespace=production create -f kubernetes/gceme/service_backend.yaml`
+    $ kubectl --namespace=production create -f kubernetes/gceme/service_backend.yaml
 
-    `$ kubectl --namespace=production create -f kubernetes/gceme/frontend.yaml`
+    $ kubectl --namespace=production create -f kubernetes/gceme/frontend.yaml
 
-    `$ kubectl --namespace=production create -f kubernetes/gceme/backend.yaml`
+    $ kubectl --namespace=production create -f kubernetes/gceme/backend.yaml
+
+    ```
+
+1. Scale the production service:
 
     `$ kubectl --namespace=production scale rc/gceme-frontend --replicas=4`
 
@@ -244,10 +251,10 @@ You'll have two environments - staging and production - and use Kubernetes names
 
 1. Confirm that both services are working by opening them in your browser
 
-1. Open a terminal and poll the staging endpoint's `/version` URL so you can easily observe rolling updates in the next section:
+1. Open a terminal and poll the production endpoint's `/version` URL so you can easily observe rolling updates in the next section:
 
    ```shell
-   $ while true; do curl http://YOUR_STAGING_SERVICE_IP/version; sleep 1;  done
+   $ while true; do curl http://YOUR_PRODUCTION_SERVICE_IP/version; sleep 1;  done
    ```
 
 ### Create a repository for the sample app source
@@ -318,7 +325,7 @@ node('docker') {
   checkout scm
 
   // Kubernetes cluster info
-  def cluster = 'gtc'
+  def cluster = 'cd'
   def zone = 'us-central1-f'
   def project = 'REPLACE_WITH_YOUR_PROJECT_NAME'
 
@@ -384,7 +391,7 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
 
    ```go
    //snip
-   const version string = "4.0.0"
+   const version string = "2.0.0"
    //snip
    ```
 

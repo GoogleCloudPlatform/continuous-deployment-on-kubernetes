@@ -36,7 +36,7 @@ spec:
         image: gcr.io/cloud-solutions-images/jenkins-gcp-leader:master-aa479b4
         resources:
           limits:
-            memory: "768Mi"
+            memory: "1Gi"
             cpu: "500m"
         command:
         - /usr/local/bin/start.sh

@@ -31,6 +31,10 @@ spec:
       containers:
       - name: backend
         image: gcr.io/cloud-solutions-images/gceme:1.0.0
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
