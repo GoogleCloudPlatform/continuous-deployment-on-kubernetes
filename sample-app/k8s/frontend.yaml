@@ -12,24 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kind: ReplicationController
-apiVersion: v1
+kind: Deployment
+apiVersion: extensions/v1beta1
 metadata:
-  name: gceme-backend
+  name: gceme-frontend
 spec:
-  replicas: 1
-  selector:
-    app: gceme
-    role: backend
+  replicas:
   template:
     metadata:
-      name: backend
+      name: frontend
       labels:
         app: gceme
-        role: backend
+        role: frontend
     spec:
       containers:
-      - name: backend
+      - name: frontend
         image: gcr.io/cloud-solutions-images/gceme:1.0.0
         resources:
           limits:
@@ -39,8 +36,8 @@ spec:
         readinessProbe:
           httpGet:
             path: /healthz
-            port: 8080
-        command: ["sh", "-c", "app -port=8080"]
+            port: 80
+        command: ["sh", "-c", "app -frontend=true -backend-service=http://${GCEME_BACKEND_SERVICE_HOST}:${GCEME_BACKEND_SERVICE_PORT} -port=80"]
         ports:
-        - name: backend
-          containerPort: 8080
+        - name: frontend
+          containerPort: 80

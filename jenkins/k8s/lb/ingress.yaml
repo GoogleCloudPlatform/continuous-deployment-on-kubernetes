@@ -12,23 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kind: Service
-apiVersion: v1
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
   name: jenkins
-  labels:
-    name: jenkins
-    role: frontend
+  namespace: jenkins
 spec:
-  ports:
-  - name: ui
-    port: 8080
-    targetPort: jenkins-http
-    protocol: TCP
-  - name: discovery
-    port: 50000
-    targetPort: jenkins-disco
-    protocol: TCP
-  selector:
-    name: jenkins
-    role: leader
+  tls:
+  - secretName: tls
+  backend:
+    serviceName: jenkins-ui
+    servicePort: 8080

@@ -11,15 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: jenkins-ui
+    namespace: jenkins
+  spec:
+    type: NodePort
+    selector:
+      app: master
+    ports:
+      - protocol: TCP
+        port: 8080
+        targetPort: 8080
+        name: ui
 
-#! /bin/bash
-gcloud container clusters create gtc \
-  --scopes https://www.googleapis.com/auth/cloud-platform
-
-kubectl create -f kubernetes/jenkins/jenkins.yaml
-kubectl create -f kubernetes/jenkins/service_jenkins.yaml
-kubectl create -f kubernetes/jenkins/build_agent.yaml
-kubectl scale rc/jenkins-builder --replicas=5
-kubectl create -f kubernetes/jenkins/ssl_secrets.yaml
-kubectl create -f kubernetes/jenkins/proxy.yaml
-kubectl create -f kubernetes/jenkins/service_proxy.yaml
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: jenkins-discovery
+    namespace: jenkins
+  spec:
+    selector:
+      app: master
+    ports:
+      - protocol: TCP
+        port: 50000
+        targetPort: 50000
+        name: slaves

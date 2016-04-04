@@ -1,0 +1,44 @@
+node {
+  def project = 'vic-goog'
+
+  def appName = 'gceme'
+  def feSvcName = "${appName}-frontend"
+
+  if (env.BRANCH_NAME == "master") {
+    namespace = "staging"
+  } else {
+    namespace = env.BRANCH_NAME
+  }
+
+  def imageTag = "gcr.io/${project}/${feSvcName}:${namespace}"
+
+  checkout scm
+ 
+  stage 'Build image'
+  sh("docker build -t ${imageTag} .")
+
+  stage 'Run Go tests'
+  sh("docker run ${imageTag} go test")
+
+  stage 'Push image to registry'
+  sh("gcloud docker push ${imageTag}")
+
+  stage "Deploy Application to ${namespace} namespace"
+
+  // Create namespace if it doesnt exist
+  sh("kubectl get ns ${namespace} || kubectl create ns ${namespace}")
+
+  switch (namespace) {
+    case ["staging", "production"]:
+        // Only create public loadbalancer in staging and production envs
+        sh("kubectl --namespace=${namespace} apply -f k8s/lb/")
+        break
+
+    default:
+        // Apply judicious quota for dev branches
+        sh("kubectl --namespace=${namespace} apply -f k8s/quota/")
+  }
+  sh("sed -i.bak 's#gcr.io/cloud-solutions-images/gceme:1.0.0#${imageTag}#' ./k8s/*.yaml")
+  sh("kubectl --namespace=${namespace} apply -f k8s/")
+  sh("echo http://`kubectl --namespace=${namespace} get service/${feSvcName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${feSvcName}")
+}

@@ -12,35 +12,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kind: ReplicationController
-apiVersion: v1
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
-  name: gceme-frontend
+  name: jenkins
+  namespace: jenkins
 spec:
   replicas: 1
-  selector:
-    app: gceme
-    role: frontend
   template:
     metadata:
-      name: frontend
       labels:
-        app: gceme
-        role: frontend
+        app: master
     spec:
       containers:
-      - name: frontend
-        image: gcr.io/cloud-solutions-images/gceme:1.0.0
+      - name: master
+        image: jenkins:1.642.3
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: jenkins-home
         resources:
           limits:
-            memory: "500Mi"
-            cpu: "100m"
-        imagePullPolicy: Always
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 80
-        command: ["sh", "-c", "app -frontend=true -backend-service=http://${GCEME_BACKEND_SERVICE_HOST}:${GCEME_BACKEND_SERVICE_PORT} -port=80"]
-        ports:
-        - name: frontend
-          containerPort: 80
+            cpu: 500m
+            memory: 1000Mi
+          requests:
+            cpu: 500m
+            memory: 1000Mi
+      volumes:
+      - name: jenkins-home
+        gcePersistentDisk:
+          pdName: jenkins-home
+          fsType: ext4
+          partition: 1
+
+
