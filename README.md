@@ -424,13 +424,23 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
 
   ![](docs/img/console.png)
 
-1. Track the output for a few minutes and watch for the `kubectl rollingupdate...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change.
+1. Track the output for a few minutes and watch for the `kubectl --namespace=staging apply...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change.
 
-1. When the change is deployed to staging and you are prompted to deploy it:
+1. When the change is deployed to staging and you can deploy it to production by creating a branch called `production` and pushing it to the Git server:
 
-  ![](docs/img/approve.png)
+   ```shell
+    $ git checkout -b production
+    $ git push origin production
+   ```
+1. In a minute or so you should see that a second job has been created in the sample-app folder and that it has been kicked off:
 
-1. If everything looks good, click the **Deploy to production** link. Confirm that production looks good when it completes.
+    ![](docs/img/production.png)
+
+1. Poll the production url in order to verify that the new version (2.0.0) has been rolled out to that environment:
+
+   ```shell
+   $ while true; do curl http://YOUR_PRODUCTION_SERVICE_IP/version; sleep 1;  done
+   ```
 
 1. Look at the `Jenkinsfile` in the project and analyze how the approval workflow is written.
 
