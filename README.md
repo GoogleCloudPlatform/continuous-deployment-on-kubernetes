@@ -211,7 +211,7 @@ Events:
 
 Open the load balancer's IP address in your web browser, click "Log in" in the top right and sign in with the default Jenkins username and password(`jenkins:jenkins`).
 
-![](docs/img/jenkins.png)
+![](docs/img/jenkins-login.png)
 
 ### Your progress, and what's next
 You've got a Kubernetes cluster managed by Google Container Engine. You've deployed:
