@@ -353,6 +353,10 @@ First we will need to configure our GCP credentials in order for Jenkins to be a
 1. From the “Kind” dropdown, select “Google Service Account from metadata”
 1. Click “OK”
 
+You should see 2 Global Credentials:
+
+![](docs/img/jenkins-credentials.png)
+
 
 ### Phase 2: Create a job
 This lab uses [Jenkins Pipeline](https://jenkins.io/solutions/pipeline/) to define builds as groovy scripts.
