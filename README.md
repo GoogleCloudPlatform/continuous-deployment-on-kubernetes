@@ -436,6 +436,10 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
 
     ![](docs/img/production.png)
 
+1. Clicking on the `production` link will show you the stages of your pipeline as well as pass/fail and timing characteristics.
+
+    ![](docs/img/production_pipeline.png)
+
 1. Poll the production url in order to verify that the new version (2.0.0) has been rolled out to that environment:
 
    ```shell
