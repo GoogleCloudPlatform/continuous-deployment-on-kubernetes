@@ -416,7 +416,7 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
 
 1. `git add Jenkinsfile html.go main.go`, then `git commit`, and finally `git push origin master` your change. When the change has pushed,
 
-1. When your change has been pushed to GitHub, navigate to Jenkins and click the button to run your build.
+1. When your change has been pushed to the Git repository, navigate to Jenkins. Your build should start shortly.
 
   ![](docs/img/first-build.png)
 
