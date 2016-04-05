@@ -393,7 +393,7 @@ Modify your `Jenkinsfile` script so it contains the correct project name on line
 
 Don't commit the new `Jenkinsfile` just yet. You'll make one more change in the next section, then commit and push them together.
 
-## Deploy a change
+## Deploy a change to staging
 Now that your pipeline is working, it's time to make a change to the `gceme` app and let your pipeline test, package, and deploy it.
 
 1. In the `sample-app` repository on your workstation open `html.go` and replace the word `blue` with `orange` (there should be exactly two occurrences):
@@ -447,6 +447,45 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
    ```
 
 1. Look at the `Jenkinsfile` in the project and analyze how the workflow is written.
+
+# Deploy a development branch
+Often times changes will not be so trivial that they can be pushed directly to the staging environment. In order to create a development environment from a long lived feature branch
+all you need to do is push it up to the Git server and let Jenkins deploy your environment. In this case you will not use a loadbalancer so you'll have to access your application using `kubectl proxy`,
+which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
+
+1. Create another branch and push it up to the Git server
+   ```shell
+    $ git checkout -b new-feature
+    $ git push origin new-feature
+   ```
+
+You should see that a new job has been created and your environment is being created. At the bottom of the console output of the job
+you will see instructions for accessing your environment. Namely:
+
+1. Start the proxy
+    ```shell
+    $ kubectl proxy
+   ```
+1. Access your application via localhost:
+    ```shell
+    $ curl http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
+   ```
+
+1. You can now push code to this branch in order to update your development environment. Once you are done, merge your branch back
+into master to deploy that code to the staging environment:
+    ```shell
+    $ git checkout master
+    $ git merge new-feature
+    $ git push master
+   ```
+
+1. When you are confident that your code won't wreak havoc in production merge from the `master` branch to the `production` branch. Your code
+ will be automatically rolled out in the production environment:
+ ```shell
+    $ git checkout production
+    $ git merge master
+    $ git push production
+   ```
 
 ## Extra credit: deploy a breaking change, then roll back
 Make a breaking change to the `gceme` source, push it, and deploy it through the pipeline to production. Then pretend latency spiked after the deployment and you want to roll back. Do it! Faster!
