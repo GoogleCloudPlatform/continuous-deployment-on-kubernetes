@@ -28,10 +28,10 @@ node {
   // Create namespace if it doesnt exist
   sh("kubectl get ns ${namespace} || kubectl create ns ${namespace}")
 
+  if (namespace )
   switch (namespace) {
     case ["staging", "production"]:
-        // Only create public loadbalancer in staging and production envs
-        sh("kubectl --namespace=${namespace} apply -f k8s/lb/")
+        // Insert any special things for production or staging here
         break
 
     default:
