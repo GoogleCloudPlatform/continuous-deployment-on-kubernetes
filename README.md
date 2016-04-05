@@ -373,12 +373,12 @@ Navigate to your Jenkins UI and follow these steps to configure a Pipeline job (
 
 1. Paste the **HTTPS clone URL** of your `sample-app` repo on Cloud Source Repositories into the **Project Repository** field.
     It will look like: https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_NAME/r/default
-  
-  ![](docs/img/clone_url.png)
 
 1. Under "Build Triggers", check "Build Periodically" and enter "* * * * *" in to the "Schedule" field, this will ensure that Jenkins will check our repository for changes every minute.
 
 1. Click `Save`, leaving all other options with their defaults
+
+  ![](docs/img/clone_url.png)
 
 A job entitled "Branch indexing" was kicked off to see identify the branches in your repository. If you refresh Jenkins you should see the `master` branch now has a job created for it.
 
