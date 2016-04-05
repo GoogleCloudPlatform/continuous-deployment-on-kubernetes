@@ -78,8 +78,8 @@ In order to pre-populate Jenkins with the necessary plugins and configuration fo
 a volume from an existing tarball of that data.
 
 ```shell
-gcloud compute create images jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home.tgz
-gcloud compute create disk jenkins-home --image jenkins-home-image
+gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home.tar.gz
+gcloud compute disk create jenkins-home --image jenkins-home-image
 ```
 
 ### Create a Jenkins Deployment and Service
