@@ -1,5 +1,5 @@
 node {
-  def project = 'vic-goog'
+  def project = 'REPLACE_WITH_YOUR_PROJECT_NAME'
 
   def appName = 'gceme'
   def feSvcName = "${appName}-frontend"
