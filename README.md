@@ -243,7 +243,6 @@ The binary supports two modes of operation, designed to mimic a microservice. In
                                                        |         |
                                                        -----------
 ```
-??? NEED TO ADD HEALTH CHECKS TO DEPLOYMENT
 Both the frontend and backend modes of the application support two additional URLs:
 
 1. `/version` prints the version of the binary (declared as a const in `main.go`)
