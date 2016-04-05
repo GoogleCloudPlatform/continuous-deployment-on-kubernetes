@@ -487,6 +487,13 @@ into master to deploy that code to the staging environment:
     $ git push production
    ```
 
+1. When you are done with your development branch, delete it from the server and delete the environment in Kubernetes:
+ ```shell
+    $ git push origin :new-feature
+    $ kubectl delete ns new-feature
+   ```
+
+
 ## Extra credit: deploy a breaking change, then roll back
 Make a breaking change to the `gceme` source, push it, and deploy it through the pipeline to production. Then pretend latency spiked after the deployment and you want to roll back. Do it! Faster!
 
