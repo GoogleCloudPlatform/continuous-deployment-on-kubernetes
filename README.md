@@ -382,6 +382,8 @@ Navigate to your Jenkins UI and follow these steps to configure a Pipeline job (
 
 A job entitled "Branch indexing" was kicked off to see identify the branches in your repository. If you refresh Jenkins you should see the `master` branch now has a job created for it.
 
+The first run of the job will fail until the project name is set properly in the next step.
+
 ### Phase 3:  Modify Jenkinsfile, then build and test the app
 The `Jenkinsfile` is written using the Jenkins Workflow DSL (Groovy-based). It allows an entire build pipeline to be expressed in a single script that lives along side supports your source code and powerful features like parallelization, stages, and user input.
 
