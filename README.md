@@ -442,7 +442,7 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
    $ while true; do curl http://YOUR_PRODUCTION_SERVICE_IP/version; sleep 1;  done
    ```
 
-1. Look at the `Jenkinsfile` in the project and analyze how the approval workflow is written.
+1. Look at the `Jenkinsfile` in the project and analyze how the workflow is written.
 
 ## Extra credit: deploy a breaking change, then roll back
 Make a breaking change to the `gceme` source, push it, and deploy it through the pipeline to production. Then pretend latency spiked after the deployment and you want to roll back. Do it! Faster!
