@@ -370,7 +370,7 @@ Modify your `Jenkinsfile` script so it contains the correct project name on line
 
 Don't commit the new `Jenkinsfile` just yet. You'll make one more change in the next section, then commit and push them together.
 
-## Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to stagin
+## Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to staging
 Now that your pipeline is working, it's time to make a change to the `gceme` app and let your pipeline test, package, and deploy it.
 
 The staging environment is rolled out as a percentage of the pods behind the production load balancer.
