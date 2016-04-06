@@ -370,8 +370,12 @@ Modify your `Jenkinsfile` script so it contains the correct project name on line
 
 Don't commit the new `Jenkinsfile` just yet. You'll make one more change in the next section, then commit and push them together.
 
-## Deploy a change to staging
+## Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to stagin
 Now that your pipeline is working, it's time to make a change to the `gceme` app and let your pipeline test, package, and deploy it.
+
+The staging environment is rolled out as a percentage of the pods behind the production load balancer.
+In this case we have 1 out of 5 of our frontends running the staging code and the other 4 running the production code. This allows you to ensure that the staging code is not negatively affecting users before rolling out to your full fleet.
+You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: production` and `env: staging` in Google Cloud Monitoring in order to monitor the performance of each version individually.
 
 1. In the `sample-app` repository on your workstation open `html.go` and replace the word `blue` with `orange` (there should be exactly two occurrences):
 
