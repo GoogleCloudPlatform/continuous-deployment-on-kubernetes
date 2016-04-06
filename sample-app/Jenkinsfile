@@ -1,16 +1,8 @@
 node {
   def project = 'REPLACE_WITH_YOUR_PROJECT_NAME'
-
   def appName = 'gceme'
   def feSvcName = "${appName}-frontend"
-
-  if (env.BRANCH_NAME == "master") {
-    namespace = "staging"
-  } else {
-    namespace = env.BRANCH_NAME
-  }
-
-  def imageTag = "gcr.io/${project}/${feSvcName}:${namespace}"
+  def imageTag = "gcr.io/${project}/${feSvcName}:${env.BRANCH_NAME}"
 
   checkout scm
  
@@ -23,25 +15,33 @@ node {
   stage 'Push image to registry'
   sh("gcloud docker push ${imageTag}")
 
-  stage "Deploy Application to ${namespace} namespace"
-
-  // Create namespace if it doesnt exist
-  sh("kubectl get ns ${namespace} || kubectl create ns ${namespace}")
-
-  sh("sed -i.bak 's#gcr.io/cloud-solutions-images/gceme:1.0.0#${imageTag}#' ./k8s/*.yaml")
-
-  switch (namespace) {
-    case ["staging", "production"]:
-        sh("kubectl --namespace=${namespace} apply -f k8s/")
-        sh("echo http://`kubectl --namespace=${namespace} get service/${feSvcName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${feSvcName}")
+  stage "Deploy Application"
+  switch (env.BRANCH_NAME) {
+    // Roll out to staging
+    case "master":
+        // Change deployed image in staging to the one we just built
+        sh("sed -i.bak 's#gcr.io/cloud-solutions-images/gceme:1.0.0#${imageTag}#' ./k8s/*staging.yaml")
+        sh("kubectl --namespace=production apply -f k8s/")
+        sh("echo http://`kubectl --namespace=production get service/${feSvcName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${feSvcName}")
         break
 
+    // Roll out to production
+    case "production":
+        // Change deployed image in staging to the one we just built
+        sh("sed -i.bak 's#gcr.io/cloud-solutions-images/gceme:1.0.0#${imageTag}#' ./k8s/*production.yaml")
+        sh("kubectl --namespace=production apply -f k8s/")
+        sh("echo http://`kubectl --namespace=production get service/${feSvcName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${feSvcName}")
+        break
+
+    // Roll out a dev environment
     default:
+        // Create namespace if it doesnt exist
+        sh("kubectl get ns ${env.BRANCH_NAME} || kubectl create ns ${env.BRANCH_NAME}")
         // Don't use public load balancing for development branches
         sh("sed -i.bak 's#LoadBalancer#ClusterIp#' ./k8s/service_frontend.yaml")
         // Apply quota for dev branches
-        sh("kubectl --namespace=${namespace} apply -f k8s/quota/")
+        sh("kubectl --namespace=${env.BRANCH_NAME} apply -f k8s/quota/")
         echo 'To access your environment run `kubectl proxy`'
-        echo "Then access your service via http://localhost:8001/api/v1/proxy/namespaces/${namespace}/services/${feSvcName}:80/"
+        echo "Then access your service via http://localhost:8001/api/v1/proxy/namespaces/${env.BRANCH_NAME}/services/${feSvcName}:80/"
   }
 }

@@ -261,29 +261,13 @@ You'll have two primary environments - staging and production - and use Kubernet
   $ cd sample-app
   ```
 
-1. Create the namespaces:
+1. Create the namespace for production:
 
   ```shell
-  $ kubectl create ns staging
-
   $ kubectl create ns production
   ```
-
-1. Create quotas for each namespace:
-
-  ```shell
-  $ kubectl --namespace=staging apply -f k8s/quota/
-
-  $ kubectl --namespace=production apply -f k8s/quota/
-  ```
-
-1. Create the deployments and services for staging:
-
-    ```shell
-    $ kubectl --namespace=staging apply -f k8s/
-    ```
  
-1. Repeat step 3, but for the `production` namespace:
+1. Create the staging and production Deployments and Services:
 
     ```shell
     $ kubectl --namespace=production apply -f k8s/
@@ -292,17 +276,10 @@ You'll have two primary environments - staging and production - and use Kubernet
 1. Scale the production service:
 
     ```shell
-    $ kubectl --namespace=production scale deployment gceme-frontend --replicas=4
+    $ kubectl --namespace=production scale deployment gceme-frontend-production --replicas=4
     ```
 
-1. Retrieve the public IP for both services: **This field may take a few minutes to appear as the load balancer is being provisioned**:
-
-  ```shell
-  $ kubectl --namespace=staging get service gceme-frontend
-  NAME      LABELS       SELECTOR              IP(S)           PORT(S)
-  gceme     name=gceme   name=gceme-frontend   10.235.248.11   80/TCP
-                                               104.197.84.5 
-  ```
+1. Retrieve the public IP for the production services: **This field may take a few minutes to appear as the load balancer is being provisioned**:
   
   ```shell
   $ kubectl --namespace=production get service gceme-frontend
@@ -353,7 +330,7 @@ First we will need to configure our GCP credentials in order for Jenkins to be a
 1. From the “Kind” dropdown, select “Google Service Account from metadata”
 1. Click “OK”
 
-You should see 2 Global Credentials:
+You should now see 2 Global Credentials:
 
 ![](docs/img/jenkins-credentials.png)
 
@@ -424,9 +401,10 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
 
   ![](docs/img/console.png)
 
-1. Track the output for a few minutes and watch for the `kubectl --namespace=staging apply...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change.
+1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change in some of the requests.
+   You have now rolled out that change to a subset of users.
 
-1. When the change is deployed to staging and you can deploy it to production by creating a branch called `production` and pushing it to the Git server:
+1. Once the change is deployed to staging, you can continue to roll it out to the rest of your users by creating a branch called `production` and pushing it to the Git server:
 
    ```shell
     $ git checkout -b production
@@ -440,13 +418,13 @@ Now that your pipeline is working, it's time to make a change to the `gceme` app
 
     ![](docs/img/production_pipeline.png)
 
-1. Poll the production url in order to verify that the new version (2.0.0) has been rolled out to that environment:
+1. Poll the production url in order to verify that the new version (2.0.0) has been rolled out and is serving all requests:
 
    ```shell
    $ while true; do curl http://YOUR_PRODUCTION_SERVICE_IP/version; sleep 1;  done
    ```
 
-1. Look at the `Jenkinsfile` in the project and analyze how the workflow is written.
+1. Look at the `Jenkinsfile` in the project to see how the workflow is written.
 
 # Deploy a development branch
 Often times changes will not be so trivial that they can be pushed directly to the staging environment. In order to create a development environment from a long lived feature branch
