@@ -2,6 +2,7 @@
 
 ## Introduction
 This guide will take you through the steps necessary to continuously deliver your software to end users by leveraging [Google Container Engine](https://cloud.google.com/container-engine/) and [Jenkins](https://jenkins.io) to orchestrate the software delivery pipeline.
+If you are not familiar with basic Kubernetes concepts, have a look at [Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/).
 
 In order to accomplish this goal you will use the following Jenkins plugins:
   - [Jenkins Kubernetes Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin) - start Jenkins build executor containers in the Kubernetes cluster when builds are requested, terminate those containers when builds complete, freeing resources up for the rest of the cluster
@@ -211,6 +212,9 @@ Events:
 ```
 
 Open the load balancer's IP address in your web browser, click "Log in" in the top right and sign in with the default Jenkins username and password(`jenkins:jenkins`).
+
+> **Warning**: Your Jenkins instance is currently insecure. To properly secure your instance follow the steps found [here](https://wiki.jenkins-ci.org/display/JENKINS/Securing+Jenkins).
+
 
 ![](docs/img/jenkins-login.png)
 
