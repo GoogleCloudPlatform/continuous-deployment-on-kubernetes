@@ -15,9 +15,7 @@ In order to deploy the application with [Kubernetes](http://kubernetes.io/) you 
 
 ## Prerequisites
 1. A Google Cloud Platform Account
-1. Enable the following APIs in your project:
-  - Google Compute Engine
-  - Google Container Engine
+1. [Enable the Google Compute Engine and Google Container Engine APIs](https://console.cloud.google.com/flows/enableapi?apiid=compute_component,container)
 
 ## Do this first
 In this section you will start your [Google Cloud Shell](https://cloud.google.com/cloud-shell/docs/) and clone the lab code repository to it.
