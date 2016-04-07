@@ -86,6 +86,20 @@ gcloud compute disks create jenkins-home --image jenkins-home-image
 
 ### Create a Jenkins Deployment and Service
 Here you'll create a Deployment running a Jenkins container with a persistent disk attached containing the Jenkins home directory.
+
+First, set the password for the default Jenkins user. Edit the password in `jenkins/k8s/options` with the password of your choice by replacing _CHANGE_ME_. To Generate a random password and replace it in the file, you can run:
+
+```shell
+$ PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
+Your password is 2UyiEo2ezG/CKnUcgPxt
+```
+
+Now create the secret using `kubectl`:
+```shell
+$ kubectl create secret generic jenkins --from-file=jenkins/k8s/options --namespace=jenkins
+secret "jenkins" created
+```
+
 Additionally you will have a service that will route requests to the controller.
 
 > **Note**: All of the files that define the Kubernetes resources you will be creating for Jenkins are in the `jenkins/k8s` folder. You are encouraged to take a look at them before running the create commands.
@@ -211,9 +225,9 @@ Events:
   1m		1m		1	{loadbalancer-controller }			Normal		CREATE	ip: 130.123.123.123 <--- This is the load balancer's IP
 ```
 
-Open the load balancer's IP address in your web browser, click "Log in" in the top right and sign in with the default Jenkins username and password(`jenkins:jenkins`).
+Open the load balancer's IP address in your web browser, click "Log in" in the top right and sign in with the default Jenkins username `jenkins` and the password you configured when deploying Jenkins. You can find the password in the `jenkins/k8s/options` file.
 
-> **Warning**: Your Jenkins instance is currently insecure. To properly secure your instance follow the steps found [here](https://wiki.jenkins-ci.org/display/JENKINS/Securing+Jenkins).
+> **Note**: To further secure your instance follow the steps found [here](https://wiki.jenkins-ci.org/display/JENKINS/Securing+Jenkins).
 
 
 ![](docs/img/jenkins-login.png)
@@ -271,7 +285,7 @@ You'll have two primary environments - staging and production - and use Kubernet
   ```shell
   $ kubectl create ns production
   ```
- 
+
 1. Create the staging and production Deployments and Services:
 
     ```shell

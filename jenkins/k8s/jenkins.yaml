@@ -30,6 +30,12 @@ spec:
         ports:
         - containerPort: 8080
         - containerPort: 50000
+        env:
+        - name: JENKINS_OPTS
+          valueFrom:
+            secretKeyRef:
+              name: jenkins
+              key: options
         volumeMounts:
         - mountPath: /var/jenkins_home
           name: jenkins-home
