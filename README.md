@@ -298,12 +298,11 @@ You'll have two primary environments - staging and production - and use Kubernet
     ```
 
 1. Retrieve the public IP for the production services: **This field may take a few minutes to appear as the load balancer is being provisioned**:
-  
+
   ```shell
   $ kubectl --namespace=production get service gceme-frontend
-  NAME      LABELS       SELECTOR              IP(S)            PORT(S)
-  gceme     name=gceme   name=gceme-frontend   10.235.243.23    80/TCP
-                                               104.197.36.222 
+  NAME             CLUSTER-IP      EXTERNAL-IP      PORT(S)   AGE
+  gceme-frontend   10.79.241.131   104.196.110.46   80/TCP    5h
   ```
 
 1. Confirm that both services are working by opening them in your browser
