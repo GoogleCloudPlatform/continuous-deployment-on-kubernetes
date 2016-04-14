@@ -32,6 +32,7 @@ import (
 type Instance struct {
 	Id         string
 	Name       string
+	Version    string
 	Hostname   string
 	Zone       string
 	Project    string
@@ -42,7 +43,7 @@ type Instance struct {
 	Error      string
 }
 
-const version string = "1.0.0"
+const version string = "1.0.1"
 
 func main() {
 	showversion := flag.Bool("version", false, "display version")
@@ -165,6 +166,7 @@ func newInstance() *Instance {
 	i.Project = a.assign(metadata.ProjectID)
 	i.InternalIP = a.assign(metadata.InternalIP)
 	i.ExternalIP = a.assign(metadata.ExternalIP)
+	i.Version = version
 
 	if a.err != nil {
 		i.Error = a.err.Error()
