@@ -175,13 +175,12 @@ In order to create your own certs run:
 $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=jenkins/O=jenkins"
 ```
 
-Now you can base64 encode them:
+Now you can upload them to Kubernetes as secrets:
 ```shell
-$ base64  /tmp/tls.key
-$ base64  /tmp/tls.crt
+$ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.key
 ```
 
-Replace the existing ones on lines 21-22 of `jenkins/ssl_secrets.yaml`, then apply the change to the secret:
+Now that the secrets have been uploaded, create the ingress load balancer. Note that the secrets must be created before the ingress, otherwise the HTTPs endpoint will not be created.
 
 ```shell
 $ kubectl apply -f jenkins/k8s/lb
