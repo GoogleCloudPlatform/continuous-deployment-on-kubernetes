@@ -1,4 +1,4 @@
-# Lab: Build a Continuous Delivery Pipeline with Jenkins and Kubernetes 
+# Lab: Build a Continuous Deployment Pipeline with Jenkins and Kubernetes
 
 ## Introduction
 This guide will take you through the steps necessary to continuously deliver your software to end users by leveraging [Google Container Engine](https://cloud.google.com/container-engine/) and [Jenkins](https://jenkins.io) to orchestrate the software delivery pipeline.
@@ -238,7 +238,7 @@ You've got a Kubernetes cluster managed by Google Container Engine. You've deplo
 * a (non-public) service that exposes Jenkins to its slave containers
 * an Ingress resource that routes to the Jenkins service
 
-You have the tools to build a continuous delivery pipeline. Now you need a sample app to deploy continuously.
+You have the tools to build a continuous deployment pipeline. Now you need a sample app to deploy continuously.
 
 ## The sample app
 You'll use a very simple sample application - `gceme` - as the basis for your CD pipeline. `gceme` is written in Go and is located in the `sample-app` directory in this repo. When you run the `gceme` binary on a GCE instance, it displays the instance's metadata in a pretty card:
