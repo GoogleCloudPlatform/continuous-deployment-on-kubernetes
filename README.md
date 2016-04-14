@@ -320,13 +320,13 @@ Here you'll create your own copy of the `gceme` sample app in [Cloud Source Repo
 
 1. Change directories to `sampleapp` of the repo you cloned previously, then initialize the git repository.
 
-**Be sure to replace _REPLACE_WITH_YOUR_PROJECT_NAME_ with the name of your Google Cloud Platform project**
+**Be sure to replace _REPLACE_WITH_YOUR_PROJECT_ID_ with the name of your Google Cloud Platform project**
 
     ```shell
     $ cd sample-app
     $ git init
     $ git config credential.helper gcloud.sh
-    $ git remote add origin https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_NAME/r/default
+    $ git remote add origin https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
     ```
 
 1. Add, commit, and push all the files:
@@ -368,7 +368,7 @@ Navigate to your Jenkins UI and follow these steps to configure a Pipeline job (
 1. Click `Add Source` and choose `git`
 
 1. Paste the **HTTPS clone URL** of your `sample-app` repo on Cloud Source Repositories into the **Project Repository** field.
-    It will look like: https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_NAME/r/default
+    It will look like: https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
 
 1. Under "Build Triggers", check "Build Periodically" and enter "* * * * *" in to the "Schedule" field, this will ensure that Jenkins will check our repository for changes every minute.
 
@@ -385,7 +385,7 @@ The `Jenkinsfile` is written using the Jenkins Workflow DSL (Groovy-based). It a
 
 Modify your `Jenkinsfile` script so it contains the correct project name on line 2.
 
-**Be sure to replace _REPLACE_WITH_YOUR_PROJECT_NAME_ on line 2 with your project name:**
+**Be sure to replace _REPLACE_WITH_YOUR_PROJECT_ID_ on line 2 with your project name:**
 
 Don't commit the new `Jenkinsfile` just yet. You'll make one more change in the next section, then commit and push them together.
 

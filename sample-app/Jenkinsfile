@@ -1,5 +1,5 @@
 node {
-  def project = 'REPLACE_WITH_YOUR_PROJECT_NAME'
+  def project = 'REPLACE_WITH_YOUR_PROJECT_ID'
   def appName = 'gceme'
   def feSvcName = "${appName}-frontend"
   def imageTag = "gcr.io/${project}/${feSvcName}:${env.BRANCH_NAME}"
