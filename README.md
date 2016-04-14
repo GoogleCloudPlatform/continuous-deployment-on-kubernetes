@@ -305,12 +305,18 @@ You'll have two primary environments - staging and production - and use Kubernet
   gceme-frontend   10.79.241.131   104.196.110.46   80/TCP    5h
   ```
 
+1. Store frontend service load balancer IP in the environment variable:
+
+  ```shell
+  $ $ export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
+  ```
+
 1. Confirm that both services are working by opening them in your browser
 
 1. Open a terminal and poll the production endpoint's `/version` URL so you can easily observe rolling updates in the next section:
 
    ```shell
-   $ while true; do curl http://YOUR_PRODUCTION_SERVICE_IP/version; sleep 1;  done
+   $ while true; do curl http://$FRONTEND_SERVICE_IP/version; sleep 1;  done
    ```
 
 ### Create a repository for the sample app source
@@ -442,7 +448,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 1. Poll the production url in order to verify that the new version (2.0.0) has been rolled out and is serving all requests:
 
    ```shell
-   $ while true; do curl http://YOUR_PRODUCTION_SERVICE_IP/version; sleep 1;  done
+   $ while true; do curl http://$FRONTEND_SERVICE_IP/version; sleep 1;  done
    ```
 
 1. Look at the `Jenkinsfile` in the project to see how the workflow is written.
