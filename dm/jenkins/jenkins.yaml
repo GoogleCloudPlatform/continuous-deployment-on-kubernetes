@@ -1,0 +1,38 @@
+# Copyright 2016 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+imports:
+- path: cluster.jinja
+- path: jenkins.py
+- path: k8s/jenkins.yaml
+  name: jenkins.yaml
+- path: k8s/ui_service.yaml
+  name: ui_service.yaml
+- path: k8s/discovery_service.yaml
+  name: discovery_service.yaml
+
+resources:
+- name: gke-cluster
+  type: cluster.jinja
+  properties:
+    zone: us-central1-f
+    username: viglesias
+    password: 4pqOyM5tB3sFqxRKoKxx
+- name: jenkins
+  type: jenkins.py
+  properties:
+    zone: $(ref.gke-cluster.zone)
+    typeName: $(ref.gke-cluster.typeName)
+    password: $(ref.gke-cluster.password)
+
