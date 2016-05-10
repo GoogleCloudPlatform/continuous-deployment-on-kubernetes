@@ -176,7 +176,7 @@ $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out 
 
 Now you can upload them to Kubernetes as secrets:
 ```shell
-$ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.key
+$ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.key --namespace jenkins
 ```
 
 Now that the secrets have been uploaded, create the ingress load balancer. Note that the secrets must be created before the ingress, otherwise the HTTPs endpoint will not be created.
