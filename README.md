@@ -135,8 +135,7 @@ Next we will open up the firewall to allow access to those ports:
 
 ```shell
 $ export NODE_PORT=$(kubectl get --namespace=jenkins -o jsonpath="{.spec.ports[0].nodePort}" services jenkins-ui)
-$ export TAG=$(kubectl get nodes | awk '{print $1}' | tail -n +2 | grep -wo 'gke.*-node' | uniq)
-$ gcloud compute firewall-rules create allow-130-211-0-0-22 --source-ranges 130.211.0.0/22 --target-tags $TAG --allow tcp:$NODE_PORT
+$ gcloud compute firewall-rules create allow-130-211-0-0-22-$NODE_PORT --source-ranges 130.211.0.0/22 --allow tcp:$NODE_PORT
 Created [https://www.googleapis.com/compute/v1/projects/vic-goog/global/firewalls/allow-130-211-0-0-22].
 NAME                 NETWORK SRC_RANGES     RULES     SRC_TAGS TARGET_TAGS
 allow-130-211-0-0-22 default 130.211.0.0/22 tcp:30573          gke-jenkins-cd-e5d0264b-node
