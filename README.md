@@ -287,7 +287,9 @@ You'll have two primary environments - staging and production - and use Kubernet
 1. Create the staging and production Deployments and Services:
 
     ```shell
-    $ kubectl --namespace=production apply -f k8s/
+    $ kubectl --namespace=production apply -f k8s/production
+    $ kubectl --namespace=production apply -f k8s/staging
+    $ kubectl --namespace=production apply -f k8s/services
     ```
 
 1. Scale the production service:
@@ -296,7 +298,7 @@ You'll have two primary environments - staging and production - and use Kubernet
     $ kubectl --namespace=production scale deployment gceme-frontend-production --replicas=4
     ```
 
-1. Retrieve the public IP for the production services: **This field may take a few minutes to appear as the load balancer is being provisioned**:
+1. Retrieve the External IP for the production services: **This field may take a few minutes to appear as the load balancer is being provisioned**:
 
   ```shell
   $ kubectl --namespace=production get service gceme-frontend
@@ -307,10 +309,10 @@ You'll have two primary environments - staging and production - and use Kubernet
 1. Store frontend service load balancer IP in the environment variable:
 
   ```shell
-  $ $ export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
+  $ export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
   ```
 
-1. Confirm that both services are working by opening them in your browser
+1. Confirm that both services are working by opening the frontend external IP in your browser
 
 1. Open a terminal and poll the production endpoint's `/version` URL so you can easily observe rolling updates in the next section:
 
@@ -321,7 +323,7 @@ You'll have two primary environments - staging and production - and use Kubernet
 ### Create a repository for the sample app source
 Here you'll create your own copy of the `gceme` sample app in [Cloud Source Repository](https://cloud.google.com/source-repositories/docs/).
 
-1. Change directories to `sampleapp` of the repo you cloned previously, then initialize the git repository.
+1. Change directories to `sample-app` of the repo you cloned previously, then initialize the git repository.
 
 **Be sure to replace _REPLACE_WITH_YOUR_PROJECT_ID_ with the name of your Google Cloud Platform project**
 
@@ -384,6 +386,13 @@ A job entitled "Branch indexing" was kicked off to see identify the branches in 
 The first run of the job will fail until the project name is set properly in the next step.
 
 ### Phase 3:  Modify Jenkinsfile, then build and test the app
+
+Create a branch for the staging environment called `staging`
+   
+   ```shell
+    $ git checkout -b staging
+   ```
+
 The `Jenkinsfile` is written using the Jenkins Workflow DSL (Groovy-based). It allows an entire build pipeline to be expressed in a single script that lives along side supports your source code and powerful features like parallelization, stages, and user input.
 
 Modify your `Jenkinsfile` script so it contains the correct project name on line 2.
@@ -417,7 +426,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
    //snip
    ```
 
-1. `git add Jenkinsfile html.go main.go`, then `git commit`, and finally `git push origin master` your change. When the change has pushed,
+1. `git add Jenkinsfile html.go main.go`, then `git commit -m "Version 2"`, and finally `git push origin staging` your change.
 
 1. When your change has been pushed to the Git repository, navigate to Jenkins. Your build should start shortly.
 
@@ -433,14 +442,15 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 1. Once the change is deployed to staging, you can continue to roll it out to the rest of your users by creating a branch called `production` and pushing it to the Git server:
 
    ```shell
-    $ git checkout -b production
-    $ git push origin production
+    $ git checkout master
+    $ git merge staging
+    $ git push origin master
    ```
-1. In a minute or so you should see that a second job has been created in the sample-app folder and that it has been kicked off:
+1. In a minute or so you should see that the master job in the sample-app folder has been kicked off:
 
     ![](docs/img/production.png)
 
-1. Clicking on the `production` link will show you the stages of your pipeline as well as pass/fail and timing characteristics.
+1. Clicking on the `master` link will show you the stages of your pipeline as well as pass/fail and timing characteristics.
 
     ![](docs/img/production_pipeline.png)
 
