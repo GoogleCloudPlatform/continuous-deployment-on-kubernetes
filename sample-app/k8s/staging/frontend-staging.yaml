@@ -38,7 +38,7 @@ spec:
           httpGet:
             path: /healthz
             port: 80
-        command: ["sh", "-c", "app -frontend=true -backend-service=http://${GCEME_BACKEND_SERVICE_HOST}:${GCEME_BACKEND_SERVICE_PORT} -port=80"]
+        command: ["sh", "-c", "app -frontend=true -backend-service=http://gceme-backend:8080 -port=80"]
         ports:
         - name: frontend
           containerPort: 80
