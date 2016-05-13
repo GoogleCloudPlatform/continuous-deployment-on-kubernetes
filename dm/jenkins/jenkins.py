@@ -47,7 +47,8 @@ def GenerateConfig(context):
 
     }
     manifests = {'deployments': ['jenkins.yaml'],
-                 'services': ['ui_service.yaml']}
+                 'services': ['ui_service.yaml'],
+                 'ingresses': ['ingress.yaml']}
 
     namespace = {'name': 'jenkins-namespace',
                  'type': '{0}:{1}{2}'.format(cluster_type, '/api/v1/', 'namespaces'),
@@ -64,6 +65,7 @@ def GenerateConfig(context):
                              'kind': 'Secret',
                              'metadata': {'name': 'jenkins'},
                              'type': 'Opaque',
+                             'namespace': 'jenkins',
                              'data': {
                                 'options': options_hash
                               }
@@ -75,7 +77,7 @@ def GenerateConfig(context):
     for resource_type, filenames in manifests.iteritems():
         for path in filenames:
             type = '{0}:{1}{2}'.format(cluster_type, v1_prefix, resource_type)
-            if resource_type == 'deployments':
+            if resource_type in ['deployments', 'ingresses']:
                 type = '{0}:{1}{2}'.format(cluster_type + '-extensions', extensions_prefix, resource_type)
             name = '{0}_{1}'.format(context.env['name'], path)
             resource = {'name': name,
@@ -85,5 +87,15 @@ def GenerateConfig(context):
                         }
             resource['properties']['namespace'] = 'jenkins'
             resources.append(resource)
+
+    firewall_rule = {'name': 'k8s-ingress-fw-rule',
+                     'type': 'compute.v1.firewall',
+                     'properties': {
+                        'name': image_name,
+                        'sourceRanges': ["130.211.0.0/22"],
+                        'allowed': [{'IPProtocol': 'TCP', 'ports': ['30001']}]
+                      }
+                     }
+    resources.append(firewall_rule)
     # Resources to return.
     return {'resources': resources}

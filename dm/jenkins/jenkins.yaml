@@ -21,6 +21,8 @@ imports:
   name: ui_service.yaml
 - path: k8s/discovery_service.yaml
   name: discovery_service.yaml
+- path: k8s/lb/ingress.yaml
+  name: ingress.yaml
 
 resources:
 - name: gke-cluster
