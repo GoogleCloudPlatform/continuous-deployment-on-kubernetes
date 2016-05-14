@@ -354,7 +354,7 @@ First we will need to configure our GCP credentials in order for Jenkins to be a
 1. From the “Kind” dropdown, select “Google Service Account from metadata”
 1. Click “OK”
 
-You should now see 2 Global Credentials:
+You should now see 2 Global Credentials. Make a note of the name of second credentials as you will reference this in Phase 2:
 
 ![](docs/img/jenkins-credentials.png)
 
@@ -374,6 +374,8 @@ Navigate to your Jenkins UI and follow these steps to configure a Pipeline job (
 
 1. Paste the **HTTPS clone URL** of your `sample-app` repo on Cloud Source Repositories into the **Project Repository** field.
     It will look like: https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
+
+1. From the Credentials dropdown select the name of new created credentials from the Phase 1.
 
 1. Under "Build Triggers", check "Build Periodically" and enter "* * * * *" in to the "Schedule" field, this will ensure that Jenkins will check our repository for changes every minute.
 
