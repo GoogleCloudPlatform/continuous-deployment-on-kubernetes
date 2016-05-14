@@ -333,6 +333,12 @@ Here you'll create your own copy of the `gceme` sample app in [Cloud Source Repo
     $ git config credential.helper gcloud.sh
     $ git remote add origin https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
     ```
+1. Ensure git is able to identify you:
+
+    ```shell
+    $ git config --global user.email "YOUR-EMAIL-ADDRESS"
+    $ git config --global user.name "YOUR-NAME"
+    ```
 
 1. Add, commit, and push all the files:
 
