@@ -20,6 +20,8 @@ import base64
 
 def GenerateConfig(context):
     """Generate configuration."""
+    password = context.properties['password']
+    zone = context.properties["zone"]
     cluster_name = context.env['deployment'] + '-' + 'gke-cluster'
     type_name = cluster_name + '-type'
     cluster_type = context.env['project'] + '/' + type_name
@@ -40,8 +42,7 @@ def GenerateConfig(context):
                     'type': 'compute.v1.disk',
                     'properties': {
                         'sourceImage': 'global/images/' + image_name,
-                        # TODO this must be configurable
-                        'zone': context.properties["zone"]
+                        'zone': zone
                     },
                     'metadata': {'dependsOn': ['jenkins-home-image']}
 
@@ -58,7 +59,8 @@ def GenerateConfig(context):
                                 },
                  'metadata': {'dependsOn': [cluster_name, type_name, 'jenkins-home-image']}
                  }
-    options_hash = base64.b64encode("--argumentsRealm.passwd.jenkins={0} --argumentsRealm.roles.jenkins=admin".format(context.properties['password']))
+    options = "--argumentsRealm.passwd.jenkins={0} --argumentsRealm.roles.jenkins=admin"
+    options_hash = base64.b64encode(options.format(password))
     secret = {'name': 'jenkins-secret',
               'type': '{0}:{1}{2}'.format(cluster_type, v1_prefix, 'secrets'),
               'properties': {'apiVersion': 'v1',

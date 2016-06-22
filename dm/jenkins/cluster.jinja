@@ -15,6 +15,7 @@
 {% set NAME_PREFIX = env['deployment'] + '-' + env['name'] %}
 {% set CLUSTER_NAME = NAME_PREFIX %}
 {% set TYPE_NAME = NAME_PREFIX + '-type' %}
+{% set PASSWORD = properties['password'] %}
 
 resources:
 - name: {{ CLUSTER_NAME }}
@@ -33,7 +34,7 @@ resources:
         - https://www.googleapis.com/auth/monitoring
       masterAuth:
         username: {{ properties['username'] }}
-        password: {{ properties['password'] }}
+        password: {{ PASSWORD }}
 
 - name: {{ TYPE_NAME }}
   type: deploymentmanager.alpha.type
@@ -61,4 +62,4 @@ outputs:
 - name: typeName
   value: {{ TYPE_NAME }}
 - name: password
-  value: {{ properties['password'] }}
+  value: {{ PASSWORD }}

@@ -29,12 +29,11 @@ resources:
   type: cluster.jinja
   properties:
     zone: us-central1-f
-    username: viglesias
-    password: 4pqOyM5tB3sFqxRKoKxx
+    username: jenkins
+    password: CHANGE_ME
 - name: jenkins
   type: jenkins.py
   properties:
     zone: $(ref.gke-cluster.zone)
     typeName: $(ref.gke-cluster.typeName)
-    password: $(ref.gke-cluster.password)
-
+    password: CHANGE_ME
