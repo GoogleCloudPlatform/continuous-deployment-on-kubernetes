@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: master
-        image: jenkins:2.0-alpine
+        image: jenkins:1.642.4
         ports:
         - containerPort: 8080
         - containerPort: 50000
