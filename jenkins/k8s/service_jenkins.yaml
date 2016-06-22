@@ -15,6 +15,23 @@
   kind: Service
   apiVersion: v1
   metadata:
+    name: jenkins-ui
+    namespace: jenkins
+  spec:
+    type: NodePort
+    selector:
+      app: master
+    ports:
+      - protocol: TCP
+        port: 8080
+        targetPort: 8080
+        name: ui
+        nodePort: 30001
+
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
     name: jenkins-discovery
     namespace: jenkins
   spec:
