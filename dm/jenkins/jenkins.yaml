@@ -17,10 +17,8 @@ imports:
 - path: jenkins.py
 - path: k8s/jenkins.yaml
   name: jenkins.yaml
-- path: k8s/ui_service.yaml
-  name: ui_service.yaml
-- path: k8s/discovery_service.yaml
-  name: discovery_service.yaml
+- path: k8s/service_jenkins.yaml
+  name: service_jenkins.yaml
 - path: k8s/lb/ingress.yaml
   name: ingress.yaml
 

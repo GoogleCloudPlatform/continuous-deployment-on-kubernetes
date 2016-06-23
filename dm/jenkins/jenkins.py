@@ -48,7 +48,7 @@ def GenerateConfig(context):
 
     }
     manifests = {'deployments': ['jenkins.yaml'],
-                 'services': ['ui_service.yaml'],
+                 'services': ['service_jenkins.yaml'],
                  'ingresses': ['ingress.yaml']}
 
     namespace = {'name': 'jenkins-namespace',
@@ -82,13 +82,15 @@ def GenerateConfig(context):
             if resource_type in ['deployments', 'ingresses']:
                 type = '{0}:{1}{2}'.format(cluster_type + '-extensions', extensions_prefix, resource_type)
             name = '{0}_{1}'.format(context.env['name'], path)
-            resource = {'name': name,
-                        'type': type,
-                        'properties': yaml.safe_load(context.imports[path]),
-                        'metadata': {'dependsOn': [namespace['name'], 'jenkins-home']}
-                        }
-            resource['properties']['namespace'] = 'jenkins'
-            resources.append(resource)
+            yaml_docs = yaml.safe_load_all(context.imports[path])
+            for doc in yaml_docs:
+                resource = {'name': resource_type + '-' + doc['metadata']['name'],
+                            'type': type,
+                            'properties': doc,
+                            'metadata': {'dependsOn': [namespace['name'], 'jenkins-home']}
+                            }
+                resource['properties']['namespace'] = 'jenkins'
+                resources.append(resource)
 
     firewall_rule = {'name': 'k8s-ingress-fw-rule',
                      'type': 'compute.v1.firewall',
