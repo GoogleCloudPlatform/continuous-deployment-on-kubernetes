@@ -1,0 +1,65 @@
+# Copyright 2016 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+{% set NAME_PREFIX = env['deployment'] + '-' + env['name'] %}
+{% set CLUSTER_NAME = NAME_PREFIX %}
+{% set TYPE_NAME = NAME_PREFIX + '-type' %}
+{% set PASSWORD = properties['password'] %}
+
+resources:
+- name: {{ CLUSTER_NAME }}
+  type: container.v1.cluster
+  properties:
+    zone: {{ properties['zone'] }}
+    cluster:
+      name: {{ CLUSTER_NAME }}
+      initialNodeCount: {{ properties['numNodes'] }}
+      nodeConfig:
+        oauthScopes:
+        - https://www.googleapis.com/auth/projecthosting
+        - https://www.googleapis.com/auth/compute
+        - https://www.googleapis.com/auth/devstorage.read_write
+        - https://www.googleapis.com/auth/logging.write
+        - https://www.googleapis.com/auth/monitoring
+      masterAuth:
+        username: {{ properties['username'] }}
+        password: {{ PASSWORD }}
+
+- name: {{ TYPE_NAME }}
+  type: deploymentmanager.alpha.type
+  properties:
+    configurableService:
+      descriptorUrl: https://$(ref.{{ CLUSTER_NAME }}.endpoint)/swaggerapi/api/v1
+      credential:
+        basicAuth:
+          user: $(ref.{{ CLUSTER_NAME }}.masterAuth.username)
+          password: $(ref.{{ CLUSTER_NAME }}.masterAuth.password)
+
+- name: {{ TYPE_NAME }}-extensions
+  type: deploymentmanager.alpha.type
+  properties:
+    configurableService:
+      descriptorUrl: https://$(ref.{{ CLUSTER_NAME }}.endpoint)/swaggerapi/apis/extensions/v1beta1
+      credential:
+        basicAuth:
+          user: $(ref.{{ CLUSTER_NAME }}.masterAuth.username)
+          password: $(ref.{{ CLUSTER_NAME }}.masterAuth.password)
+
+outputs:
+- name: zone
+  value: {{ properties['zone'] }}
+- name: typeName
+  value: {{ TYPE_NAME }}
+- name: password
+  value: {{ PASSWORD }}
