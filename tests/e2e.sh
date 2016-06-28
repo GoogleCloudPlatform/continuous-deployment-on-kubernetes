@@ -1,6 +1,8 @@
 #!/bin/bash -xe
 export PROJECT_ID=jenkins-gke-`date +%s`
 export ZONE=us-east1-d
+echo y | gcloud components update
+echo y | gcloud components install alpha
 gcloud alpha projects create ${PROJECT_ID}
 gcloud alpha billing accounts projects link --account-id ${BILLING_ACCOUNT_ID} ${PROJECT_ID}
 gcloud config set project ${PROJECT_ID}
