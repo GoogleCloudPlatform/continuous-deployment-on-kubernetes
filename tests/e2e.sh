@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -xe
+#!/bin/bash -xe
 export PROJECT_ID=jenkins-gke-`date +%s`
 export ZONE=us-east1-d
 gcloud alpha projects create ${PROJECT_ID}
