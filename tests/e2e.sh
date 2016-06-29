@@ -9,7 +9,7 @@ echo y | gcloud components install kubectl
 gcloud config set project ${PROJECT_ID}
 gcloud config set compute/zone ${ZONE}
 
-sleep 600 # Wait for project to enable APIs, should probably poll
+#sleep 600 # Wait for project to enable APIs, should probably poll
 
 gcloud compute networks create jenkins --mode auto
 
