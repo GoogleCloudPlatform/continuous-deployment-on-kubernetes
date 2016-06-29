@@ -6,7 +6,7 @@ echo y | gcloud components install kubectl
 #echo y | gcloud components install alpha
 #gcloud alpha projects create ${PROJECT_ID}
 #gcloud alpha billing accounts projects link --account-id ${BILLING_ACCOUNT_ID} ${PROJECT_ID}
-gcloud config set project ${PROJECT_ID}
+#gcloud config set project ${PROJECT_ID}
 gcloud config set compute/zone ${ZONE}
 
 #sleep 600 # Wait for project to enable APIs, should probably poll
