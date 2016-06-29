@@ -41,4 +41,4 @@ sleep 360
 export INGRESS_IP=$(kubectl get --namespace=jenkins -o jsonpath="{.status.loadBalancer.ingress[0].ip}" ingress jenkins)
 curl https://${INGRESS_IP}
 
-echo y | gcloud projects delete jenkins-gke-1467152934
+#echo y | gcloud projects delete ${PROJECT_ID}
