@@ -83,7 +83,7 @@ In order to pre-populate Jenkins with the necessary plugins and configuration fo
 a volume from an existing tarball of that data.
 
 ```shell
-gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home.tar.gz
+gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v2.tar.gz
 gcloud compute disks create jenkins-home --image jenkins-home-image
 ```
 
@@ -114,34 +114,6 @@ $ kubectl apply -f jenkins/k8s/
 deployment "jenkins" created
 service "jenkins-ui" created
 service "jenkins-discovery" created
-```
-
-The Jenkins UI service was implemented with a NodePort. We will need to get the port that was exposed in order to
-allow the [Ingress HTTP load balancer](https://cloud.google.com/container-engine/docs/tutorials/http-balancer) to reach the UI:
-
-```shell
-$ kubectl describe svc --namespace jenkins jenkins-ui
-Name:			jenkins-ui
-Namespace:		jenkins
-Labels:			<none>
-Selector:		app=master
-Type:			NodePort
-IP:			10.123.123.123
-Port:			ui	8080/TCP
-NodePort:		ui	30573/TCP   <----- THIS IS THE PORT NUMBER OPENED UP ON EACH CLUSTER NODE
-Endpoints:		<none>
-Session Affinity:	None
-No events.
-```
-
-Next we will open up the firewall to allow access to those ports:
-
-```shell
-$ export NODE_PORT=$(kubectl get --namespace=jenkins -o jsonpath="{.spec.ports[0].nodePort}" services jenkins-ui)
-$ gcloud compute firewall-rules create allow-130-211-0-0-22-$NODE_PORT --source-ranges 130.211.0.0/22 --allow tcp:$NODE_PORT
-Created [https://www.googleapis.com/compute/v1/projects/vic-goog/global/firewalls/allow-130-211-0-0-22].
-NAME                 NETWORK SRC_RANGES     RULES     SRC_TAGS TARGET_TAGS
-allow-130-211-0-0-22 default 130.211.0.0/22 tcp:30573          gke-jenkins-cd-e5d0264b-node
 ```
 
 Check that your master pod is in the running state
