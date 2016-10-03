@@ -17,7 +17,7 @@
 package main
 
 import (
-	"google.golang.org/cloud/compute/metadata"
+	"cloud.google.com/go/compute/metadata"
 	"testing"
 )
 
