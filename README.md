@@ -330,7 +330,7 @@ You'll now use Jenkins to define and run a pipeline that will test, build, and d
 First we will need to configure our GCP credentials in order for Jenkins to be able to access our code repository
 
 1. In the Jenkins UI, Click “Credentials” on the left
-1. Click “Global Credentials”
+1. Click either of the “(global)” links (they both route to the same URL)
 1. Click “Add Credentials” on the left
 1. From the “Kind” dropdown, select “Google Service Account from metadata”
 1. Click “OK”
