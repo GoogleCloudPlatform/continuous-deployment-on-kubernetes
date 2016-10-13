@@ -376,7 +376,7 @@ Create a branch for the staging environment called `staging`
     $ git checkout -b staging
    ```
 
-The `Jenkinsfile` is written using the Jenkins Workflow DSL (Groovy-based). It allows an entire build pipeline to be expressed in a single script that lives along side supports your source code and powerful features like parallelization, stages, and user input.
+The [`Jenkinsfile`](https://jenkins.io/doc/book/pipeline/jenkinsfile/) is written using the Jenkins Workflow DSL (Groovy-based). It allows an entire build pipeline to be expressed in a single script that lives alongside your source code and supports powerful features like parallelization, stages, and user input.
 
 Modify your `Jenkinsfile` script so it contains the correct project name on line 2.
 
