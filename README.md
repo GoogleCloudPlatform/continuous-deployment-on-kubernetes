@@ -281,19 +281,21 @@ You'll have two primary environments - staging and production - and use Kubernet
   gceme-frontend   10.79.241.131   104.196.110.46   80/TCP    5h
   ```
 
-1. Store frontend service load balancer IP in the environment variable:
+1. Confirm that both services are working by opening the frontend external IP in your browser
+
+1. Open a new Google Cloud Shell terminal by clicking the `+` button to the right of the current terminal's tab, and store the frontend service load balancer's IP in the environment variable:
 
   ```shell
   $ export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
   ```
 
-1. Confirm that both services are working by opening the frontend external IP in your browser
-
-1. Open a terminal and poll the production endpoint's `/version` URL so you can easily observe rolling updates in the next section:
+1. Poll the production endpoint's /version URL. Leave this running in the second terminal so you can easily observe rolling updates in the next section:
 
    ```shell
    $ while true; do curl http://$FRONTEND_SERVICE_IP/version; sleep 1;  done
    ```
+
+1. Return to the first terminal
 
 ### Create a repository for the sample app source
 Here you'll create your own copy of the `gceme` sample app in [Cloud Source Repository](https://cloud.google.com/source-repositories/docs/).
@@ -419,7 +421,21 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
   ![](docs/img/console.png)
 
-1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change in some of the requests.
+1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change in some of the requests:
+
+   ```
+  1.0.0
+  1.0.0
+  1.0.0
+  1.0.0
+  2.0.0
+  2.0.0
+  1.0.0
+  1.0.0
+  1.0.0
+  1.0.0
+   ```
+
    You have now rolled out that change to a subset of users.
 
 1. Once the change is deployed to staging, you can continue to roll it out to the rest of your users by creating a branch called `production` and pushing it to the Git server:
@@ -437,10 +453,19 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
     ![](docs/img/production_pipeline.png)
 
-1. Poll the production url in order to verify that the new version (2.0.0) has been rolled out and is serving all requests:
+1. Open the terminal that's polling staging's `/version` URL and observe that the new version (2.0.0) has been rolled out and is serving all requests.
 
-   ```shell
-   $ while true; do curl http://$FRONTEND_SERVICE_IP/version; sleep 1;  done
+   ```
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
+   2.0.0
    ```
 
 1. Look at the `Jenkinsfile` in the project to see how the workflow is written.
