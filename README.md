@@ -390,7 +390,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
 1. In the `sample-app` repository on your workstation open `html.go` and replace the word `blue` with `orange` (there should be exactly two occurrences):
 
-  ```css
+  ```html
   //snip
   <div class="card orange">
   <div class="card-content white-text">
