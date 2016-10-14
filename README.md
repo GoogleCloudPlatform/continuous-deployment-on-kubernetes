@@ -477,6 +477,8 @@ Often times changes will not be so trivial that they can be pushed directly to t
 all you need to do is push it up to the Git server and let Jenkins deploy your environment. In this case you will not use a loadbalancer so you'll have to access your application using `kubectl proxy`,
 which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
 
+#### Deploy the development branch
+
 1. Create another branch and push it up to the Git server
 
    ```shell
@@ -484,15 +486,34 @@ which authenticates itself with the Kuberentes API and proxies requests from you
    $ git push origin new-feature
    ```
 
-   You should see that a new job has been created and your environment is being created. At the bottom of the console output of the job you will see instructions for accessing your environment. Namely:
+1. Open Jenkins in your web browser and navigate to the sample-app job. You should see that a new job called "new-feature" has been created and your environment is being created.
 
-1. Start the proxy
+1. Navigate to the console output of the first build of this new job by:
+
+  * Click the `new-feature` link in the job list.
+  * Click the `#1` link in the Build History list on the left of the page.
+  * Finally click the `Console Output` link in the left navigation.
+
+1. Scroll to the bottom of the console output of the job, and you will see instructions for accessing your environment:
+
+   ```
+   deployment "gceme-frontend-dev" created
+   [Pipeline] echo
+   To access your environment run `kubectl proxy`
+   [Pipeline] echo
+   Then access your service via http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
+   [Pipeline] }
+   ```
+
+#### Access the development branch
+
+1. Open a new Google Cloud Shell terminal by clicking the `+` button to the right of the current terminal's tab, and start the proxy:
 
    ```shell
    $ kubectl proxy
    ```
 
-1. Access your application via localhost:
+1. Return to the original shell, and access your application via localhost:
 
    ```shell
    $ curl http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
