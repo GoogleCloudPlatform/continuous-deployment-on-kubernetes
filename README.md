@@ -34,74 +34,78 @@ In this section you will start your [Google Cloud Shell](https://cloud.google.co
 
 1. When the shell is open, set your default compute zone:
 
-  ```shell
-  $ gcloud config set compute/zone us-east1-d
-  ```
+   ```shell
+   $ gcloud config set compute/zone us-east1-d
+   ```
 
 1. Clone the lab repository in your cloud shell, then `cd` into that dir:
 
-  ```shell
-  $ git clone https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes.git
-  Cloning into 'continuous-deployment-on-kubernetes'...
-  ...
+   ```shell
+   $ git clone https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes.git
+   Cloning into 'continuous-deployment-on-kubernetes'...
+   ...
 
-  $ cd continuous-deployment-on-kubernetes
-  ```
+   $ cd continuous-deployment-on-kubernetes
+   ```
 
 ##  Create a Kubernetes Cluster
 You'll use Google Container Engine to create and manage your Kubernetes cluster. Provision the cluster with `gcloud`:
 
-```shell
-$ gcloud container clusters create jenkins-cd \
-  --num-nodes 3 \
-  --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
-```
+   ```shell
+   $ gcloud container clusters create jenkins-cd \
+     --num-nodes 3 \
+     --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
+   ```
 
 Once that operation completes download the credentials for your cluster using the [gcloud CLI](https://cloud.google.com/sdk/):
-```shell
-$ gcloud container clusters get-credentials jenkins-cd
-Fetching cluster endpoint and auth data.
-kubeconfig entry generated for jenkins-cd.
-```
+
+   ```shell
+   $ gcloud container clusters get-credentials jenkins-cd
+   Fetching cluster endpoint and auth data.
+   kubeconfig entry generated for jenkins-cd.
+   ```
 
 Confirm that the cluster is running and `kubectl` is working by listing pods:
 
-```shell
-$ kubectl get pods
-```
+   ```shell
+   $ kubectl get pods
+   ```
+
 You should see an empty response.
 
 ## Create namespace and quota for Jenkins
 
 Create the `jenkins` namespace:
-```shell
-$ kubectl create ns jenkins
-```
+
+   ```shell
+   $ kubectl create ns jenkins
+   ```
 
 ### Create the Jenkins Home Volume
 In order to pre-populate Jenkins with the necessary plugins and configuration for the rest of the tutorial, you will create
 a volume from an existing tarball of that data.
 
-```shell
-gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v2.tar.gz
-gcloud compute disks create jenkins-home --image jenkins-home-image
-```
+   ```shell
+   gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v2.tar.gz
+   gcloud compute disks create jenkins-home --image jenkins-home-image
+   ```
 
 ### Create a Jenkins Deployment and Service
 Here you'll create a Deployment running a Jenkins container with a persistent disk attached containing the Jenkins home directory.
 
 First, set the password for the default Jenkins user. Edit the password in `jenkins/k8s/options` with the password of your choice by replacing _CHANGE_ME_. To Generate a random password and replace it in the file, you can run:
 
-```shell
-$ PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
-Your password is 2UyiEo2ezG/CKnUcgPxt
-```
+   ```shell
+   $ PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
+   Your password is 2UyiEo2ezG/CKnUcgPxt
+   ```
 
 Now create the secret using `kubectl`:
-```shell
-$ kubectl create secret generic jenkins --from-file=jenkins/k8s/options --namespace=jenkins
-secret "jenkins" created
-```
+
+   ```shell
+   $ kubectl create secret generic jenkins --from-file=jenkins/k8s/options --namespace=jenkins
+   secret "jenkins" created
+   ```
 
 Additionally you will have a service that will route requests to the controller.
 
@@ -109,29 +113,29 @@ Additionally you will have a service that will route requests to the controller.
 
 The Jenkins Deployment is defined in `kubernetes/jenkins.yaml`. Create the Deployment and confirm the pod was scheduled:
 
-```shell
-$ kubectl apply -f jenkins/k8s/
-deployment "jenkins" created
-service "jenkins-ui" created
-service "jenkins-discovery" created
-```
+   ```shell
+   $ kubectl apply -f jenkins/k8s/
+   deployment "jenkins" created
+   service "jenkins-ui" created
+   service "jenkins-discovery" created
+   ```
 
 Check that your master pod is in the running state
 
-```shell
-$ kubectl get pods --namespace jenkins
-NAME                   READY     STATUS    RESTARTS   AGE
-jenkins-master-to8xg   1/1       Running   0          30s
-```
+   ```shell
+   $ kubectl get pods --namespace jenkins
+   NAME                   READY     STATUS    RESTARTS   AGE
+   jenkins-master-to8xg   1/1       Running   0          30s
+   ```
 
 Now, check that the Jenkins Service was created properly:
 
-```shell
-$ kubectl get svc --namespace jenkins
-NAME                CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
-jenkins-discovery   10.79.254.142   <none>        50000/TCP   10m
-jenkins-ui          10.79.242.143   nodes         8080/TCP    10m
-```
+   ```shell
+   $ kubectl get svc --namespace jenkins
+   NAME                CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
+   jenkins-discovery   10.79.254.142   <none>        50000/TCP   10m
+   jenkins-ui          10.79.242.143   nodes         8080/TCP    10m
+   ```
 
 We are using the [Kubernetes Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin) so that our builder nodes will be automatically launched as necessary when the Jenkins master requests them.
 Upon completion of their work they will automatically be turned down and their resources added back to the clusters resource pool.
@@ -145,58 +149,60 @@ The Ingress resource is defined in `jenkins/k8s/lb/ingress.yaml`. We used the Ku
 
 In order to create your own certs run:
 
-```shell
-$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=jenkins/O=jenkins"
-```
+   ```shell
+   $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=jenkins/O=jenkins"
+   ```
 
 Now you can upload them to Kubernetes as secrets:
-```shell
-$ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.key --namespace jenkins
-```
+
+   ```shell
+   $ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.key --namespace jenkins
+   ```
 
 Now that the secrets have been uploaded, create the ingress load balancer. Note that the secrets must be created before the ingress, otherwise the HTTPs endpoint will not be created.
 
-```shell
-$ kubectl apply -f jenkins/k8s/lb
-```
+   ```shell
+   $ kubectl apply -f jenkins/k8s/lb
+   ```
 
 <a name="connect-to-jenkins"></a>
 ### Connect to Jenkins
 
 Now find the load balancer IP address of your Ingress service (in the `Address` field). **This field may take a few minutes to appear as the load balancer is being provisioned**:
 
-```shell
-$  kubectl get ingress --namespace jenkins
-NAME      RULE      BACKEND            ADDRESS         AGE
-jenkins      -         master:8080        130.X.X.X      4m
-```
+   ```shell
+   $  kubectl get ingress --namespace jenkins
+   NAME      RULE      BACKEND            ADDRESS         AGE
+   jenkins      -         master:8080        130.X.X.X      4m
+   ```
 
 The loadbalancer will begin health checks against your Jenkins instance. Once the checks go to healthy you will be able to access your Jenkins instance:
-```shell
-$  kubectl describe ingress jenkins --namespace jenkins
-Name:			jenkins
-Namespace:		jenkins
-Address:		130.211.14.253
-Default backend:	jenkins-ui:8080 (10.76.2.3:8080)
-TLS:
-  tls terminates
-Rules:
-  Host	Path	Backends
-  ----	----	--------
-Annotations:
-  https-forwarding-rule:	k8s-fws-jenkins-jenkins
-  https-target-proxy:		k8s-tps-jenkins-jenkins
-  static-ip:			k8s-fw-jenkins-jenkins
-  target-proxy:			k8s-tp-jenkins-jenkins
-  url-map:			k8s-um-jenkins-jenkins
-  backends:			{"k8s-be-32371":"HEALTHY"}   <---- LOOK FOR THIS TO BE HEALTHY
-  forwarding-rule:		k8s-fw-jenkins-jenkins
-Events:
-  FirstSeen	LastSeen	Count	From				SubobjectPath	Type		Reason	Message
-  ---------	--------	-----	----				-------------	--------	------	-------
-  2m		2m		1	{loadbalancer-controller }			Normal		ADD	jenkins/jenkins
-  1m		1m		1	{loadbalancer-controller }			Normal		CREATE	ip: 130.123.123.123 <--- This is the load balancer's IP
-```
+
+   ```shell
+   $  kubectl describe ingress jenkins --namespace jenkins
+   Name:			jenkins
+   Namespace:		jenkins
+   Address:		130.211.14.253
+   Default backend:	jenkins-ui:8080 (10.76.2.3:8080)
+   TLS:
+     tls terminates
+   Rules:
+     Host	Path	Backends
+     ----	----	--------
+   Annotations:
+     https-forwarding-rule:	k8s-fws-jenkins-jenkins
+     https-target-proxy:		k8s-tps-jenkins-jenkins
+     static-ip:			k8s-fw-jenkins-jenkins
+     target-proxy:			k8s-tp-jenkins-jenkins
+     url-map:			k8s-um-jenkins-jenkins
+     backends:			{"k8s-be-32371":"HEALTHY"}   <---- LOOK FOR THIS TO BE HEALTHY
+     forwarding-rule:		k8s-fw-jenkins-jenkins
+   Events:
+     FirstSeen	LastSeen	Count	From				SubobjectPath	Type		Reason	Message
+     ---------	--------	-----	----				-------------	--------	------	-------
+     2m		2m		1	{loadbalancer-controller }			Normal		ADD	jenkins/jenkins
+     1m		1m		1	{loadbalancer-controller }			Normal		CREATE	ip: 130.123.123.123 <--- This is the load balancer's IP
+   ```
 
 Open the load balancer's IP address in your web browser, click "Log in" in the top right and sign in with the default Jenkins username `jenkins` and the password you configured when deploying Jenkins. You can find the password in the `jenkins/k8s/options` file.
 
@@ -249,37 +255,37 @@ You'll have two primary environments - staging and production - and use Kubernet
 
 1. First change directories to the sample-app:
 
-  ```shell
-  $ cd sample-app
-  ```
+   ```shell
+   $ cd sample-app
+   ```
 
 1. Create the namespace for production:
 
-  ```shell
-  $ kubectl create ns production
-  ```
+   ```shell
+   $ kubectl create ns production
+   ```
 
 1. Create the staging and production Deployments and Services:
 
-    ```shell
-    $ kubectl --namespace=production apply -f k8s/production
-    $ kubectl --namespace=production apply -f k8s/staging
-    $ kubectl --namespace=production apply -f k8s/services
-    ```
+   ```shell
+   $ kubectl --namespace=production apply -f k8s/production
+   $ kubectl --namespace=production apply -f k8s/staging
+   $ kubectl --namespace=production apply -f k8s/services
+   ```
 
 1. Scale the production service:
 
-    ```shell
-    $ kubectl --namespace=production scale deployment gceme-frontend-production --replicas=4
-    ```
+   ```shell
+   $ kubectl --namespace=production scale deployment gceme-frontend-production --replicas=4
+   ```
 
 1. Retrieve the External IP for the production services: **This field may take a few minutes to appear as the load balancer is being provisioned**:
 
-  ```shell
-  $ kubectl --namespace=production get service gceme-frontend
-  NAME             CLUSTER-IP      EXTERNAL-IP      PORT(S)   AGE
-  gceme-frontend   10.79.241.131   104.196.110.46   80/TCP    5h
-  ```
+   ```shell
+   $ kubectl --namespace=production get service gceme-frontend
+   NAME             CLUSTER-IP      EXTERNAL-IP      PORT(S)   AGE
+   gceme-frontend   10.79.241.131   104.196.110.46   80/TCP    5h
+   ```
 
 1. Confirm that both services are working by opening the frontend external IP in your browser
 
@@ -299,26 +305,27 @@ Here you'll create your own copy of the `gceme` sample app in [Cloud Source Repo
 
 **Be sure to replace _REPLACE_WITH_YOUR_PROJECT_ID_ with the name of your Google Cloud Platform project**
 
-    ```shell
-    $ cd sample-app
-    $ git init
-    $ git config credential.helper gcloud.sh
-    $ git remote add origin https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
-    ```
+   ```shell
+   $ cd sample-app
+   $ git init
+   $ git config credential.helper gcloud.sh
+   $ git remote add origin https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
+   ```
+
 1. Ensure git is able to identify you:
 
-    ```shell
-    $ git config --global user.email "YOUR-EMAIL-ADDRESS"
-    $ git config --global user.name "YOUR-NAME"
-    ```
+   ```shell
+   $ git config --global user.email "YOUR-EMAIL-ADDRESS"
+   $ git config --global user.name "YOUR-NAME"
+   ```
 
 1. Add, commit, and push all the files:
 
-    ```shell
-    $ git add .
-    $ git commit -m "Initial commit"
-    $ git push origin master
-    ```
+   ```shell
+   $ git add .
+   $ git commit -m "Initial commit"
+   $ git push origin master
+   ```
 
 ## Create a pipeline
 You'll now use Jenkins to define and run a pipeline that will test, build, and deploy your copy of `gceme` to your Kubernetes cluster. You'll approach this in phases. Let's get started with the first.
@@ -335,7 +342,6 @@ First we will need to configure our GCP credentials in order for Jenkins to be a
 You should now see 2 Global Credentials. Make a note of the name of second credentials as you will reference this in Phase 2:
 
 ![](docs/img/jenkins-credentials.png)
-
 
 ### Phase 2: Create a job
 This lab uses [Jenkins Pipeline](https://jenkins.io/solutions/pipeline/) to define builds as groovy scripts.
@@ -368,9 +374,9 @@ The first run of the job will fail until the project name is set properly in the
 ### Phase 3:  Modify Jenkinsfile, then build and test the app
 
 Create a branch for the staging environment called `staging`
-   
+
    ```shell
-    $ git checkout -b staging
+   $ git checkout -b staging
    ```
 
 The [`Jenkinsfile`](https://jenkins.io/doc/book/pipeline/jenkinsfile/) is written using the Jenkins Workflow DSL (Groovy-based). It allows an entire build pipeline to be expressed in a single script that lives alongside your source code and supports powerful features like parallelization, stages, and user input.
@@ -390,13 +396,13 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
 1. In the `sample-app` repository on your workstation open `html.go` and replace the word `blue` with `orange` (there should be exactly two occurrences):
 
-  ```html
-  //snip
-  <div class="card orange">
-  <div class="card-content white-text">
-  <div class="card-title">Backend that serviced this request</div>
-  //snip
-  ```
+   ```html
+   //snip
+   <div class="card orange">
+   <div class="card-content white-text">
+   <div class="card-title">Backend that serviced this request</div>
+   //snip
+   ```
 
 1. In the same repository, open `main.go` and change the version number from `1.0.0` to `2.0.0`:
 
@@ -436,10 +442,11 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 1. Once the change is deployed to staging, you can continue to roll it out to the rest of your users by creating a branch called `production` and pushing it to the Git server:
 
    ```shell
-    $ git checkout master
-    $ git merge staging
-    $ git push origin master
+   $ git checkout master
+   $ git merge staging
+   $ git push origin master
    ```
+
 1. In a minute or so you should see that the master job in the sample-app folder has been kicked off:
 
     ![](docs/img/production.png)
@@ -471,45 +478,50 @@ all you need to do is push it up to the Git server and let Jenkins deploy your e
 which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
 
 1. Create another branch and push it up to the Git server
+
    ```shell
-    $ git checkout -b new-feature
-    $ git push origin new-feature
+   $ git checkout -b new-feature
+   $ git push origin new-feature
    ```
 
-You should see that a new job has been created and your environment is being created. At the bottom of the console output of the job
-you will see instructions for accessing your environment. Namely:
+   You should see that a new job has been created and your environment is being created. At the bottom of the console output of the job you will see instructions for accessing your environment. Namely:
 
 1. Start the proxy
-    ```shell
-    $ kubectl proxy
+
+   ```shell
+   $ kubectl proxy
    ```
+
 1. Access your application via localhost:
-    ```shell
-    $ curl http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
+
+   ```shell
+   $ curl http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
    ```
 
 1. You can now push code to this branch in order to update your development environment. Once you are done, merge your branch back
 into master to deploy that code to the staging environment:
-    ```shell
-    $ git checkout master
-    $ git merge new-feature
-    $ git push master
+
+   ```shell
+   $ git checkout master
+   $ git merge new-feature
+   $ git push master
    ```
 
 1. When you are confident that your code won't wreak havoc in production merge from the `master` branch to the `production` branch. Your code
  will be automatically rolled out in the production environment:
- ```shell
-    $ git checkout production
-    $ git merge master
-    $ git push production
+ 
+   ```shell
+   $ git checkout production
+   $ git merge master
+   $ git push production
    ```
 
 1. When you are done with your development branch, delete it from the server and delete the environment in Kubernetes:
- ```shell
-    $ git push origin :new-feature
-    $ kubectl delete ns new-feature
-   ```
 
+   ```shell
+   $ git push origin :new-feature
+   $ kubectl delete ns new-feature
+   ```
 
 ## Extra credit: deploy a breaking change, then roll back
 Make a breaking change to the `gceme` source, push it, and deploy it through the pipeline to production. Then pretend latency spiked after the deployment and you want to roll back. Do it! Faster!
