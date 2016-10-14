@@ -283,15 +283,10 @@ You'll have two primary environments - staging and production - and use Kubernet
 
 1. Confirm that both services are working by opening the frontend external IP in your browser
 
-1. Open a new Google Cloud Shell terminal by clicking the `+` button to the right of the current terminal's tab, and store the frontend service load balancer's IP in the environment variable:
-
-  ```shell
-  $ export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
-  ```
-
-1. Poll the production endpoint's /version URL. Leave this running in the second terminal so you can easily observe rolling updates in the next section:
+1. Open a new Google Cloud Shell terminal by clicking the `+` button to the right of the current terminal's tab, and poll the production endpoint's `/version` URL. Leave this running in the second terminal so you can easily observe rolling updates in the next section:
 
    ```shell
+   $ export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
    $ while true; do curl http://$FRONTEND_SERVICE_IP/version; sleep 1;  done
    ```
 
