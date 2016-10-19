@@ -34,10 +34,10 @@ spec:
           httpGet:
             path: /login
             port: 8080
-          periodSeconds: 1
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 2
+          failureThreshold: 5
         env:
         - name: JENKINS_OPTS
           valueFrom:
