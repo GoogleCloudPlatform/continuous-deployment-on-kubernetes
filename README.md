@@ -48,7 +48,7 @@ In this section you will start your [Google Cloud Shell](https://cloud.google.co
   $ cd continuous-deployment-on-kubernetes
   ```
 
-##  Create a Kubernetes Cluster
+## Create a Kubernetes Cluster
 You'll use Google Container Engine to create and manage your Kubernetes cluster. Provision the cluster with `gcloud`:
 
 ```shell
@@ -240,7 +240,7 @@ Both the frontend and backend modes of the application support two additional UR
 1. `/version` prints the version of the binary (declared as a const in `main.go`)
 1. `/healthz` reports the health of the application. In frontend mode, health will be OK if the backend is reachable.
 
-## Deploy the sample app to Kubernetes
+### Deploy the sample app to Kubernetes
 In this section you will deploy the `gceme` frontend and backend to Kubernetes using Kubernetes manifest files (included in this repo) that describe the environment that the `gceme` binary/Docker image will be deployed to. They use a default `gceme` Docker image that you will be updating with your own in a later section.
 
 You'll have two primary environments - staging and production - and use Kubernetes namespaces to isolate them.
@@ -381,7 +381,7 @@ Modify your `Jenkinsfile` script so it contains the correct project name on line
 
 Don't commit the new `Jenkinsfile` just yet. You'll make one more change in the next section, then commit and push them together.
 
-## Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to staging
+### Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to staging
 Now that your pipeline is working, it's time to make a change to the `gceme` app and let your pipeline test, package, and deploy it.
 
 The staging environment is rolled out as a percentage of the pods behind the production load balancer.
@@ -465,7 +465,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
 1. Look at the `Jenkinsfile` in the project to see how the workflow is written.
 
-# Phase 5: Deploy a development branch
+### Phase 5: Deploy a development branch
 Often times changes will not be so trivial that they can be pushed directly to the staging environment. In order to create a development environment from a long lived feature branch
 all you need to do is push it up to the Git server and let Jenkins deploy your environment. In this case you will not use a loadbalancer so you'll have to access your application using `kubectl proxy`,
 which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
