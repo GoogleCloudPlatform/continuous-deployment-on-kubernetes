@@ -512,22 +512,22 @@ which authenticates itself with the Kuberentes API and proxies requests from you
    $ curl http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
    ```
 
-1. You can now push code to this branch in order to update your development environment. Once you are done, merge your branch back
-into master to deploy that code to the staging environment:
+1. You can now push code to the `new-feature` branch in order to update your development environment.
+
+1. Once you are done, merge your `new-feature ` branch back into the  `staging` branch to deploy that code to the staging environment:
+
+   ```shell
+   $ git checkout staging
+   $ git merge new-feature
+   $ git push origin staging
+   ```
+
+1. When you are confident that your code won't wreak havoc in production, merge from the `staging` branch to the `master` branch. Your code will be automatically rolled out in the production environment:
 
    ```shell
    $ git checkout master
-   $ git merge new-feature
-   $ git push master
-   ```
-
-1. When you are confident that your code won't wreak havoc in production merge from the `master` branch to the `production` branch. Your code
- will be automatically rolled out in the production environment:
- 
-   ```shell
-   $ git checkout production
-   $ git merge master
-   $ git push production
+   $ git merge staging
+   $ git push origin master
    ```
 
 1. When you are done with your development branch, delete it from the server and delete the environment in Kubernetes:
