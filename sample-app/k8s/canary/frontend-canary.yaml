@@ -15,19 +15,19 @@
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: gceme-backend-staging
+  name: gceme-frontend-canary
 spec:
-  replicas: 1
+  replicas:
   template:
     metadata:
-      name: backend
+      name: frontend
       labels:
         app: gceme
-        role: backend
-        env: staging
+        role: frontend
+        env: canary
     spec:
       containers:
-      - name: backend
+      - name: frontend
         image: gcr.io/cloud-solutions-images/gceme:1.0.0
         resources:
           limits:
@@ -37,8 +37,8 @@ spec:
         readinessProbe:
           httpGet:
             path: /healthz
-            port: 8080
-        command: ["sh", "-c", "app -port=8080"]
+            port: 80
+        command: ["sh", "-c", "app -frontend=true -backend-service=http://gceme-backend:8080 -port=80"]
         ports:
-        - name: backend
-          containerPort: 8080
+        - name: frontend
+          containerPort: 80
