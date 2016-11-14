@@ -13,3 +13,5 @@
 # limitations under the License.
 
 FROM golang:1.5.1-onbuild
+EXPOSE 8080
+CMD ["sh", "-c", "app -frontend=true -backend-service=http://gceme-backend:8080 -port=80"]
