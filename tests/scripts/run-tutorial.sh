@@ -19,5 +19,9 @@ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.
 kubectl apply -f jenkins/k8s/lb/ingress.yaml
 for i in `seq 1 5`;do kubectl describe ingress jenkins --namespace jenkins; sleep 60;done
 
-kubectl get ingress --namespace jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}' jenkins
+ADDRESS=`kubectl get ingress --namespace jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}' jenkins`
 kubectl describe ingress --namespace=jenkins jenkins | grep backends | grep HEALTHY
+curl -f http://$ADDRESS/login
+kubectl delete namespace jenkins
+# Wait for k8s to cleanup its resources
+sleep 60

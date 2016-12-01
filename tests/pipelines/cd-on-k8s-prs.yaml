@@ -1,0 +1,68 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: viglesiasce/pr-resource
+resources:
+- name: continuous-deployment-on-kubernetes
+  type: pull-request
+  source:
+    access_token: {{github_access_token}}
+    repo: googlecloudplatform/continuous-deployment-on-kubernetes
+    label: ok-to-test
+jobs:
+- name: run-tutorial
+  serial: true
+  plan:
+  - get: continuous-deployment-on-kubernetes
+    trigger: true
+    params:
+      fetch_merge: true
+  - put: continuous-deployment-on-kubernetes
+    params:
+      path: continuous-deployment-on-kubernetes
+      status: pending
+      context: concourse-ci/running-tutorial
+  - task: run-tutorial
+    params:
+      service_account_json: {{service_account_json}}
+      project_id: {{project_id}}
+      zone: us-east1-d
+    on_success:
+      put: continuous-deployment-on-kubernetes
+      params:
+        path: continuous-deployment-on-kubernetes
+        status: success
+        context: concourse-ci/running-tutorial
+    on_failure:
+      put: continuous-deployment-on-kubernetes
+      params:
+        path: continuous-deployment-on-kubernetes
+        status: failure
+        context: concourse-ci/running-tutorial
+    file: continuous-deployment-on-kubernetes/tests/tasks/run-tutorial.yaml
+- name: build-sample-app
+  plan:
+  - get: continuous-deployment-on-kubernetes
+    trigger: true
+    params:
+      fetch_merge: true
+  - put: continuous-deployment-on-kubernetes
+    params:
+      path: continuous-deployment-on-kubernetes
+      status: pending
+      context: concourse-ci/building-sample-app
+  - task: run-sample-app
+    file: continuous-deployment-on-kubernetes/tests/tasks/build-sample-app.yaml
+    on_success:
+      put: continuous-deployment-on-kubernetes
+      params:
+        context: concourse-ci/building-sample-app
+        path: continuous-deployment-on-kubernetes
+        status: success
+    on_failure:
+      put: continuous-deployment-on-kubernetes
+      params:
+        context: concourse-ci/building-sample-app
+        path: continuous-deployment-on-kubernetes
+        status: failure

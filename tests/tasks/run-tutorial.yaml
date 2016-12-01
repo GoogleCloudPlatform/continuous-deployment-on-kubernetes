@@ -24,12 +24,14 @@ run:
     gcloud auth activate-service-account --key-file=service_account.json
     gcloud config set project $project_id
     gcloud config set compute/zone $zone
-
     cd continuous-deployment-on-kubernetes
     # Setup email
-    echo "CD on K8s: Failed to run tutorial" > ../email/subject-failed
+    echo "Failed to run tutorial" > ../email/subject-failed
     git --no-pager show > ../email/body-failed
+    echo "Tutorial completed successfully" > ../email/subject-passed
 
-    ./tests/cleanup.sh
-    ./tests/run-tutorial.sh
-    ## TODO Check for ingress IP then curl login url
+    # Run cleanup in case test failed previously
+    ./tests/scripts/cleanup.sh
+
+    ./tests/scripts/run-tutorial.sh
+    ./tests/scripts/cleanup.sh

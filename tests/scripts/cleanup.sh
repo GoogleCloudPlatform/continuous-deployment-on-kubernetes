@@ -5,7 +5,6 @@ printf "y\n" | gcloud compute disks delete jenkins-home || true
 for rule in $(gcloud compute firewall-rules list --filter network=jenkins --format='value(name)');do
   printf "y\n" | gcloud compute firewall-rules delete $rule || true
 done
-printf "y\n" | gcloud compute networks delete jenkins || true
 for rule in $(gcloud compute forwarding-rules list  --regexp '.*jenkins-jenkins.*'  --format='value(name)');do
   printf "y\n" | gcloud compute forwarding-rules delete $rule --global
 done
@@ -27,3 +26,7 @@ done
 for url in $(gcloud compute url-maps list --regexp '.*-jenkins-jenkins.*'  --format='value(name)');do
   printf "y\n" | gcloud compute url-maps delete $url
 done
+for backend in $(gcloud compute backend-services list --regexp '.*-jenkins-jenkins.*'  --format='value(name)');do
+  printf "y\n" | gcloud compute backend-services delete $backend || true
+done
+printf "y\n" | gcloud compute networks delete jenkins || true
