@@ -1,0 +1,37 @@
+platform: linux
+inputs:
+- name: continuous-deployment-on-kubernetes
+outputs:
+- name: email
+image_resource:
+    type: docker-image
+    source:
+      repository: viglesiasce/csa-test
+      tag: latest
+params:
+  service_account_json:
+  project_id:
+  zone:
+run:
+  path: bash
+  args:
+  - -exc
+  - |
+    cat > service_account.json <<EOF
+    $service_account_json
+    EOF
+    # Initialize gcloud
+    gcloud auth activate-service-account --key-file=service_account.json
+    gcloud config set project $project_id
+    gcloud config set compute/zone $zone
+    cd continuous-deployment-on-kubernetes
+    # Setup email
+    echo "Failed to run tutorial" > ../email/subject-failed
+    git --no-pager show > ../email/body-failed
+    echo "Tutorial completed successfully" > ../email/subject-passed
+
+    # Run cleanup in case test failed previously
+    ./tests/scripts/cleanup.sh
+
+    ./tests/scripts/run-tutorial.sh
+    ./tests/scripts/cleanup.sh

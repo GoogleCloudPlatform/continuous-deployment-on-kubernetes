@@ -1,0 +1,57 @@
+resource_types:
+- name: email
+  type: docker-image
+  source:
+    repository: pcfseceng/email-resource
+resources:
+- name: continuous-deployment-on-kubernetes
+  type: git
+  source:
+    uri: https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes.git
+    branch: master
+- name: once-a-day
+  type: time
+  source:
+    interval: 1440m
+- name: send-an-email
+  type: email
+  source:
+    smtp:
+      host: {{smtp_host}}
+      port: {{smtp_port}}
+      username: {{smtp_username}}
+      password: {{smtp_password}}
+    from: concourse@vicnastea.io
+    to: [ {{maintainer_email}} ]
+jobs:
+- name: run-tutorial
+  serial: true
+  plan:
+  - get: once-a-day
+    trigger: true
+  - get: continuous-deployment-on-kubernetes
+    trigger: true
+  - task: run-tutorial
+    params:
+      service_account_json: {{service_account_json}}
+      project_id: {{project_id}}
+      zone: us-east1-d
+    on_failure:
+      put: send-an-email
+      params:
+        subject: email/subject-failed
+        body: email/body-failed
+    file: continuous-deployment-on-kubernetes/tests/tasks/run-tutorial.yaml
+- name: build-sample-app
+  plan:
+  - get: continuous-deployment-on-kubernetes
+    trigger: true
+  - get: once-a-day
+    trigger: true
+  - task: run-sample-app
+    file: continuous-deployment-on-kubernetes/tests/tasks/build-sample-app.yaml
+    on_failure:
+      put: send-an-email
+      params:
+        subject: email/subject-failed
+        body: email/body-failed

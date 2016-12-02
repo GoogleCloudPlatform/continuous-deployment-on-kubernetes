@@ -1,0 +1,24 @@
+platform: linux
+inputs:
+- name: continuous-deployment-on-kubernetes
+outputs:
+- name: email
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: "1.6"
+run:
+  path: bash
+  args:
+  - -exc
+  - |
+    cd continuous-deployment-on-kubernetes
+    echo "Failed to build sample-app" > ../email/subject-failed
+    git --no-pager show > ../email/body-failed
+    echo "Successfully built sample-app" > ../email/subject-passed
+    cd ..
+    cp -a continuous-deployment-on-kubernetes/sample-app /go/src/
+    cd /go/src/sample-app
+    go get -v
+    go build
