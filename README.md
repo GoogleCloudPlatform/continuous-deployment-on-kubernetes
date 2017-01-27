@@ -243,7 +243,7 @@ Both the frontend and backend modes of the application support two additional UR
 ### Deploy the sample app to Kubernetes
 In this section you will deploy the `gceme` frontend and backend to Kubernetes using Kubernetes manifest files (included in this repo) that describe the environment that the `gceme` binary/Docker image will be deployed to. They use a default `gceme` Docker image that you will be updating with your own in a later section.
 
-You'll have two primary environments - staging and production - and use Kubernetes namespaces to isolate them.
+You'll have two primary environments - [canary](http://martinfowler.com/bliki/CanaryRelease.html) and production - and use Kubernetes to manage them.
 
 > **Note**: The manifest files for this section of the tutorial are in `sample-app/k8s`. You are encouraged to open and read each one before creating it per the instructions.
 
@@ -259,11 +259,11 @@ You'll have two primary environments - staging and production - and use Kubernet
   $ kubectl create ns production
   ```
 
-1. Create the staging and production Deployments and Services:
+1. Create the canary and production Deployments and Services:
 
     ```shell
     $ kubectl --namespace=production apply -f k8s/production
-    $ kubectl --namespace=production apply -f k8s/staging
+    $ kubectl --namespace=production apply -f k8s/canary
     $ kubectl --namespace=production apply -f k8s/services
     ```
 
@@ -368,10 +368,10 @@ The first run of the job will fail until the project name is set properly in the
 
 ### Phase 3:  Modify Jenkinsfile, then build and test the app
 
-Create a branch for the staging environment called `staging`
+Create a branch for the canary environment called `canary`
    
    ```shell
-    $ git checkout -b staging
+    $ git checkout -b canary
    ```
 
 The [`Jenkinsfile`](https://jenkins.io/doc/book/pipeline/jenkinsfile/) is written using the Jenkins Workflow DSL (Groovy-based). It allows an entire build pipeline to be expressed in a single script that lives alongside your source code and supports powerful features like parallelization, stages, and user input.
@@ -382,12 +382,12 @@ Modify your `Jenkinsfile` script so it contains the correct project name on line
 
 Don't commit the new `Jenkinsfile` just yet. You'll make one more change in the next section, then commit and push them together.
 
-### Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to staging
+### Phase 4: Deploy a [canary release](http://martinfowler.com/bliki/CanaryRelease.html) to canary
 Now that your pipeline is working, it's time to make a change to the `gceme` app and let your pipeline test, package, and deploy it.
 
-The staging environment is rolled out as a percentage of the pods behind the production load balancer.
-In this case we have 1 out of 5 of our frontends running the staging code and the other 4 running the production code. This allows you to ensure that the staging code is not negatively affecting users before rolling out to your full fleet.
-You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: production` and `env: staging` in Google Cloud Monitoring in order to monitor the performance of each version individually.
+The canary environment is rolled out as a percentage of the pods behind the production load balancer.
+In this case we have 1 out of 5 of our frontends running the canary code and the other 4 running the production code. This allows you to ensure that the canary code is not negatively affecting users before rolling out to your full fleet.
+You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: production` and `env: canary` in Google Cloud Monitoring in order to monitor the performance of each version individually.
 
 1. In the `sample-app` repository on your workstation open `html.go` and replace the word `blue` with `orange` (there should be exactly two occurrences):
 
@@ -407,7 +407,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
    //snip
    ```
 
-1. `git add Jenkinsfile html.go main.go`, then `git commit -m "Version 2"`, and finally `git push origin staging` your change.
+1. `git add Jenkinsfile html.go main.go`, then `git commit -m "Version 2"`, and finally `git push origin canary` your change.
 
 1. When your change has been pushed to the Git repository, navigate to Jenkins. Your build should start shortly.
 
@@ -417,7 +417,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
   ![](docs/img/console.png)
 
-1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling staging's `/version` URL and observe it start to change in some of the requests:
+1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling canary's `/version` URL and observe it start to change in some of the requests:
 
    ```
   1.0.0
@@ -434,11 +434,11 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
    You have now rolled out that change to a subset of users.
 
-1. Once the change is deployed to staging, you can continue to roll it out to the rest of your users by creating a branch called `production` and pushing it to the Git server:
+1. Once the change is deployed to canary, you can continue to roll it out to the rest of your users by creating a branch called `production` and pushing it to the Git server:
 
    ```shell
     $ git checkout master
-    $ git merge staging
+    $ git merge canary
     $ git push origin master
    ```
 1. In a minute or so you should see that the master job in the sample-app folder has been kicked off:
@@ -449,7 +449,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 
     ![](docs/img/production_pipeline.png)
 
-1. Open the terminal that's polling staging's `/version` URL and observe that the new version (2.0.0) has been rolled out and is serving all requests.
+1. Open the terminal that's polling canary's `/version` URL and observe that the new version (2.0.0) has been rolled out and is serving all requests.
 
    ```
    2.0.0
@@ -467,7 +467,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 1. Look at the `Jenkinsfile` in the project to see how the workflow is written.
 
 ### Phase 5: Deploy a development branch
-Often times changes will not be so trivial that they can be pushed directly to the staging environment. In order to create a development environment from a long lived feature branch
+Often times changes will not be so trivial that they can be pushed directly to the canary environment. In order to create a development environment from a long lived feature branch
 all you need to do is push it up to the Git server and let Jenkins deploy your environment. In this case you will not use a loadbalancer so you'll have to access your application using `kubectl proxy`,
 which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
 
@@ -515,19 +515,19 @@ which authenticates itself with the Kuberentes API and proxies requests from you
 
 1. You can now push code to the `new-feature` branch in order to update your development environment.
 
-1. Once you are done, merge your `new-feature ` branch back into the  `staging` branch to deploy that code to the staging environment:
+1. Once you are done, merge your `new-feature ` branch back into the  `canary` branch to deploy that code to the canary environment:
 
    ```shell
-   $ git checkout staging
+   $ git checkout canary
    $ git merge new-feature
-   $ git push origin staging
+   $ git push origin canary
    ```
 
-1. When you are confident that your code won't wreak havoc in production, merge from the `staging` branch to the `master` branch. Your code will be automatically rolled out in the production environment:
+1. When you are confident that your code won't wreak havoc in production, merge from the `canary` branch to the `master` branch. Your code will be automatically rolled out in the production environment:
 
    ```shell
    $ git checkout master
-   $ git merge staging
+   $ git merge canary
    $ git push origin master
    ```
 
