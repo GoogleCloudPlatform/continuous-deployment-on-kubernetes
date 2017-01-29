@@ -6,7 +6,7 @@ gcloud container clusters create jenkins-cd \
 gcloud container clusters list
 gcloud container clusters get-credentials jenkins-cd
 kubectl cluster-info
-gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v2.tar.gz
+gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v3.tar.gz
 gcloud compute disks create jenkins-home --image jenkins-home-image --zone $zone
 PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
 kubectl create ns jenkins
