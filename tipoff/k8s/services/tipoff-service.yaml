@@ -12,16 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: gceme-backend
+  name: tipoff-service
+  labels:
+    app: tipoff
 spec:
+  type: LoadBalancer
   ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
-    protocol: TCP
+  - port: 80
+    name: tcp-80-80-olcnx
+    targetPort: 80
+  - port: 443
+    name: tcp-443-443-olcnx
+    targetPort: 443
   selector:
-    role: backend
-    app: gceme
+    app: tipoff

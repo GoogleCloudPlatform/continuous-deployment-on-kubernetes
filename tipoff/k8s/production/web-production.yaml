@@ -15,14 +15,14 @@
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: gceme-frontend-production
+  name: tiipoff-production
 spec:
   replicas:
   template:
     metadata:
       name: frontend
       labels:
-        app: gceme
+        app: tipoff
         role: frontend
         env: production
     spec:
