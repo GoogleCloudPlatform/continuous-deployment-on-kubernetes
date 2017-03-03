@@ -15,7 +15,7 @@
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: tipoff-website-dev
+  name: tipoff-website-production
 spec:
   replicas:
   template:
@@ -24,7 +24,7 @@ spec:
       labels:
         app: tipoff
         role: website
-        env: dev
+        env: production
     spec:
       containers:
       - name: web
