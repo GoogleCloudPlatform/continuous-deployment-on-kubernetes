@@ -295,6 +295,8 @@ You'll have two primary environments - [canary](http://martinfowler.com/bliki/Ca
 ### Create a repository for the sample app source
 Here you'll create your own copy of the `gceme` sample app in [Cloud Source Repository](https://cloud.google.com/source-repositories/docs/).
 
+1. Go to Google Cloud Platform > Tools > Development and under repositories, create an empty repository called "default"
+
 1. Change directories to `sample-app` of the repo you cloned previously, then initialize the git repository.
 
    **Be sure to replace _REPLACE_WITH_YOUR_PROJECT_ID_ with the name of your Google Cloud Platform project**
