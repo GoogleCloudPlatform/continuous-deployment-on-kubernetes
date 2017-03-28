@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: tipoff-controller
+  labels:
+    app: tipoff
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: tipoff
+    spec:
+      containers:
+      - name: tipoff-container
+        image: gcr.io/tipoffwebsite/mytipoff
+        resources:
+        env:
+        ports:

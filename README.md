@@ -554,3 +554,4 @@ Clean up is really easy, but also super important: if you don't follow these ins
 
 To clean up, navigate to the [Google Developers Console Project List](https://console.developers.google.com/project), choose the project you created for this lab, and delete it. That's it.
 
+*****Enabling API
