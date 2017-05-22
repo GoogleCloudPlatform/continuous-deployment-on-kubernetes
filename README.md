@@ -79,13 +79,15 @@ $ kubectl create ns jenkins
 ```
 
 ### Create the Jenkins Home Volume
-In order to pre-populate Jenkins with the necessary plugins and configuration for the rest of the tutorial, you will create
+In order to pre-populate Jenkins with the necessary [plugins and configuration](https://cloud.google.com/solutions/configuring-jenkins-container-engine) for the rest of the tutorial, you will create
 a volume from an existing tarball of that data.
 
 ```shell
 gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v3.tar.gz
 gcloud compute disks create jenkins-home --image jenkins-home-image
 ```
+
+
 
 ### Create a Jenkins Deployment and Service
 Here you'll create a Deployment running a Jenkins container with a persistent disk attached containing the Jenkins home directory.
