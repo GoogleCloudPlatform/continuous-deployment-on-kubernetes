@@ -6,7 +6,7 @@ outputs:
 image_resource:
     type: docker-image
     source:
-      repository: viglesiasce/csa-test
+      repository: google/cloud-sdk
       tag: latest
 params:
   service_account_json:
@@ -21,6 +21,8 @@ run:
     $service_account_json
     EOF
     # Initialize gcloud
+    apk add --update git openssl
+    echo y | gcloud components install kubectl
     gcloud auth activate-service-account --key-file=service_account.json
     gcloud config set project $project_id
     gcloud config set compute/zone $zone
