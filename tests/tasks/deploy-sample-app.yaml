@@ -29,8 +29,6 @@ run:
 
     cd continuous-deployment-on-kubernetes
     # Setup email
-    echo "CD on K8s: Failed to run tutorial" > ../email/subject-failed
-    git --no-pager show > ../email/body-failed
+    echo "CD on K8s: Failed to deploy sample-app" > ../email/subject-failed
 
-    ./tests/scripts/cleanup.sh
-    ./tests/scripts/run-tutorial.sh
+    ./tests/scripts/deploy-sample-app.sh

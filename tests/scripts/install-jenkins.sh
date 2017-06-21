@@ -19,5 +19,6 @@ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.
 kubectl apply -f jenkins/k8s/lb/ingress.yaml
 for i in `seq 1 10`;do kubectl describe ingress jenkins --namespace jenkins; sleep 60;done
 
-kubectl get ingress --namespace jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}' jenkins
+export INGRESS_IP=`kubectl get ingress --namespace jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}' jenkins`
 kubectl describe ingress --namespace=jenkins jenkins | grep backends | grep HEALTHY
+curl http://$INGRESS_IP
