@@ -20,9 +20,7 @@ run:
     cat > service_account.json <<EOF
     $service_account_json
     EOF
-    # Initialize gcloud
-    apk add --update git openssl
-    echo y | gcloud components install kubectl
+    apt-get install -y git openssl
     gcloud auth activate-service-account --key-file=service_account.json
     gcloud config set project $project_id
     gcloud config set compute/zone $zone
