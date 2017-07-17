@@ -11,58 +11,46 @@ resources:
     repo: googlecloudplatform/continuous-deployment-on-kubernetes
     label: ok-to-test
 jobs:
-- name: run-tutorial
+- name: test-tutorial
   serial: true
   plan:
-  - get: continuous-deployment-on-kubernetes
-    trigger: true
-    params:
-      fetch_merge: true
-  - put: continuous-deployment-on-kubernetes
-    params:
-      path: continuous-deployment-on-kubernetes
-      status: pending
-      context: concourse-ci/running-tutorial
-  - task: run-tutorial
-    params:
-      service_account_json: {{service_account_json}}
-      project_id: {{project_id}}
-      zone: us-east1-d
-    on_success:
-      put: continuous-deployment-on-kubernetes
+  - do:
+    - get: once-a-day
+      trigger: true
+    - get: continuous-deployment-on-kubernetes
+      trigger: true
+    - task: install-jenkins
       params:
-        path: continuous-deployment-on-kubernetes
-        status: success
-        context: concourse-ci/running-tutorial
-    on_failure:
-      put: continuous-deployment-on-kubernetes
+        service_account_json: {{service_account_json}}
+        project_id: {{project_id}}
+        zone: us-east1-d
+      on_failure:
+        put: send-an-email
+        params:
+          subject: email/subject-failed
+          body: email/body-failed
+      file: continuous-deployment-on-kubernetes/tests/tasks/install-jenkins.yaml
+    - task: deploy-sample-app
       params:
-        path: continuous-deployment-on-kubernetes
-        status: failure
-        context: concourse-ci/running-tutorial
-    file: continuous-deployment-on-kubernetes/tests/tasks/run-tutorial.yaml
+        service_account_json: {{service_account_json}}
+        project_id: {{project_id}}
+        zone: us-east1-d
+      on_failure:
+        put: send-an-email
+        params:
+          subject: email/subject-failed
+          body: email/body-failed
+      file: continuous-deployment-on-kubernetes/tests/tasks/deploy-sample-app.yaml
 - name: build-sample-app
   plan:
   - get: continuous-deployment-on-kubernetes
     trigger: true
-    params:
-      fetch_merge: true
-  - put: continuous-deployment-on-kubernetes
-    params:
-      path: continuous-deployment-on-kubernetes
-      status: pending
-      context: concourse-ci/building-sample-app
+  - get: once-a-day
+    trigger: true
   - task: run-sample-app
     file: continuous-deployment-on-kubernetes/tests/tasks/build-sample-app.yaml
-    on_success:
-      put: continuous-deployment-on-kubernetes
-      params:
-        context: concourse-ci/building-sample-app
-        path: continuous-deployment-on-kubernetes
-        status: success
     on_failure:
-      put: continuous-deployment-on-kubernetes
+      put: send-an-email
       params:
-        context: concourse-ci/building-sample-app
-        path: continuous-deployment-on-kubernetes
-        status: failure
+        subject: email/subject-failed
+        body: email/body-failed
