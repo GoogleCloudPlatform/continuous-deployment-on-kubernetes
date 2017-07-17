@@ -17,36 +17,61 @@ jobs:
   - do:
     - get: continuous-deployment-on-kubernetes
       trigger: true
+      params:
+        fetch_merge: true
     - task: install-jenkins
       params:
         service_account_json: {{service_account_json}}
         project_id: {{project_id}}
         zone: us-east1-d
-      on_failure:
-        put: send-an-email
+      on_success:
+        put: continuous-deployment-on-kubernetes
         params:
-          subject: email/subject-failed
-          body: email/body-failed
+          path: continuous-deployment-on-kubernetes
+          status: success
+          context: concourse-ci/install-jenkins
+      on_failure:
+        put: continuous-deployment-on-kubernetes
+        params:
+          path: continuous-deployment-on-kubernetes
+          status: failure
+          context: concourse-ci/install-jenkins
       file: continuous-deployment-on-kubernetes/tests/tasks/install-jenkins.yaml
     - task: deploy-sample-app
       params:
         service_account_json: {{service_account_json}}
         project_id: {{project_id}}
         zone: us-east1-d
-      on_failure:
-        put: send-an-email
+      on_success:
+        put: continuous-deployment-on-kubernetes
         params:
-          subject: email/subject-failed
-          body: email/body-failed
+          path: continuous-deployment-on-kubernetes
+          status: success
+          context: concourse-ci/deploy-app
+      on_failure:
+        put: continuous-deployment-on-kubernetes
+        params:
+          path: continuous-deployment-on-kubernetes
+          status: failure
+          context: concourse-ci/deploy-app
       file: continuous-deployment-on-kubernetes/tests/tasks/deploy-sample-app.yaml
 - name: build-sample-app
   plan:
   - get: continuous-deployment-on-kubernetes
     trigger: true
+    params:
+      fetch_merge: true
   - task: run-sample-app
     file: continuous-deployment-on-kubernetes/tests/tasks/build-sample-app.yaml
-    on_failure:
-      put: send-an-email
+    on_success:
+      put: continuous-deployment-on-kubernetes
       params:
-        subject: email/subject-failed
-        body: email/body-failed
+        path: continuous-deployment-on-kubernetes
+        status: success
+        context: concourse-ci/build-sample-app
+    on_failure:
+      put: continuous-deployment-on-kubernetes
+      params:
+        path: continuous-deployment-on-kubernetes
+        status: failure
+        context: concourse-ci/build-sample-app
