@@ -2,7 +2,7 @@ resource_types:
 - name: pull-request
   type: docker-image
   source:
-    repository: viglesiasce/pr-resource
+    repository: jtarchie/pr
 resources:
 - name: continuous-deployment-on-kubernetes
   type: pull-request
@@ -15,8 +15,6 @@ jobs:
   serial: true
   plan:
   - do:
-    - get: once-a-day
-      trigger: true
     - get: continuous-deployment-on-kubernetes
       trigger: true
     - task: install-jenkins
@@ -44,8 +42,6 @@ jobs:
 - name: build-sample-app
   plan:
   - get: continuous-deployment-on-kubernetes
-    trigger: true
-  - get: once-a-day
     trigger: true
   - task: run-sample-app
     file: continuous-deployment-on-kubernetes/tests/tasks/build-sample-app.yaml
