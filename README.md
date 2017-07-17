@@ -109,7 +109,7 @@ Additionally you will have a service that will route requests to the controller.
 
 > **Note**: All of the files that define the Kubernetes resources you will be creating for Jenkins are in the `jenkins/k8s` folder. You are encouraged to take a look at them before running the create commands.
 
-The Jenkins Deployment is defined in `kubernetes/jenkins.yaml`. Create the Deployment and confirm the pod was scheduled:
+The Jenkins Deployment and its two Services are defined in YAML files in`jenkins/k8s/`. Create the Deployment and Services and confirm the pod was scheduled:
 
 ```shell
 $ kubectl apply -f jenkins/k8s/
