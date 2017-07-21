@@ -2,6 +2,9 @@
 
 For a more in depth best practices guide, go to the solution posted [here](https://cloud.google.com/solutions/jenkins-on-container-engine).
 
+Tutorial: ![badge](https://concourse.dev.vicnastea.io/api/v1/teams/main/pipelines/cd-on-k8s-regression/jobs/test-tutorial/badge)
+Sample App: ![badge](https://concourse.dev.vicnastea.io/api/v1/teams/main/pipelines/cd-on-k8s-regression/jobs/build-sample-app/badge)
+
 ## Introduction
 This guide will take you through the steps necessary to continuously deliver your software to end users by leveraging [Google Container Engine](https://cloud.google.com/container-engine/) and [Jenkins](https://jenkins.io) to orchestrate the software delivery pipeline.
 If you are not familiar with basic Kubernetes concepts, have a look at [Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/).
