@@ -35,6 +35,11 @@ node {
         sh("echo http://`kubectl --namespace=production get service/${feSvcName} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${feSvcName}")
         break
 
+    // Prevent accidents or evil
+    case "production":
+        error "Branch name 'production' is invalid. Please use another name for your branch. Halting build."
+        break
+
     // Roll out a dev environment
     default:
         // Create namespace if it doesn't exist
