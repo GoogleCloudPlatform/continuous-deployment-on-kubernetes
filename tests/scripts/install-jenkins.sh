@@ -22,3 +22,7 @@ for i in `seq 1 10`;do kubectl describe ingress jenkins --namespace jenkins; sle
 export INGRESS_IP=`kubectl get ingress --namespace jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}' jenkins`
 kubectl describe ingress --namespace=jenkins jenkins | grep backends | grep HEALTHY
 curl http://$INGRESS_IP
+
+# Cleanup resources
+kubectl delete ns jenkins
+sleep 120
