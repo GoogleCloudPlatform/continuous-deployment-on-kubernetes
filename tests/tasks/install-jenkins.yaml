@@ -30,5 +30,5 @@ run:
     echo "CD on K8s: Failed to run tutorial" > ../email/subject-failed
     git --no-pager show > ../email/body-failed
 
-    ./tests/scripts/cleanup.sh
-    ./tests/scripts/install-jenkins.sh
+    ./tests/scripts/cleanup.sh | tee ../email/body-failed
+    ./tests/scripts/install-jenkins.sh | tee ../email/body-failed
