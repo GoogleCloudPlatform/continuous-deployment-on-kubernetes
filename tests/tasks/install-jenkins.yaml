@@ -17,6 +17,7 @@ run:
   args:
   - -exc
   - |
+    set -o pipefail
     cat > service_account.json <<EOF
     $service_account_json
     EOF
