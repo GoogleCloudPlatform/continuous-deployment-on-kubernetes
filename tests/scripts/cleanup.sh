@@ -2,7 +2,7 @@
 printf "y\n" | gcloud container clusters delete jenkins-cd || true
 printf "y\n" | gcloud compute images delete jenkins-home-image || true
 printf "y\n" | gcloud compute disks delete jenkins-home || true
-for rule in $(gcloud compute firewall-rules list --filter network=jenkins --format='value(name)');do
+for rule in $(gcloud compute firewall-rules list --filter network~jenkins --format='value(name)');do
   printf "y\n" | gcloud compute firewall-rules delete $rule || true
 done
 printf "y\n" | gcloud compute networks delete jenkins || true
