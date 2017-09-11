@@ -14,3 +14,7 @@ for i in `seq 1 5`;do kubectl --namespace=production get service gceme-frontend;
 
 export FRONTEND_SERVICE_IP=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --namespace=production services gceme-frontend)
 curl --retry 5 --retry-delay 5 http://$FRONTEND_SERVICE_IP/version | grep 1.0.0
+
+# Cleanup resources
+kubectl delete ns production
+sleep 120
