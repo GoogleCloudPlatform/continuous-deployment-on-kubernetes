@@ -108,35 +108,10 @@ Server: &version.Version{SemVer:"v2.6.1", GitCommit:"bbc1f71dc03afc5f00c6ac84b93
 ## Configure and Install Jenkins
 You will use a custom [values file](https://github.com/kubernetes/helm/blob/master/docs/chart_template_guide/values_files.md) to add the GCP specific plugin necessary to use service account credentials to reach your Cloud Source Repository.
 
-1. Create your configuration file by pasting the following commands into your Cloud Shell:
-```
-cat > jenkins-config.yaml <<EOF
-Master:
-  ServiceType: ClusterIP
-  InstallPlugins:
-      - kubernetes:0.11
-      - workflow-aggregator:2.5
-      - workflow-job:2.13
-      - credentials-binding:1.12
-      - git:3.4.0
-      - google-source-plugin:0.3
-Agent:
-  Image: gcr.io/cloud-solutions-images/jenkins-k8s-slave
-  ImageTag: v4
-  volumes:
-  - type: HostPath
-    hostPath: /var/run/docker.sock
-    mountPath: /var/run/docker.sock
-  - type: HostPath
-    hostPath: /usr/bin/docker
-    mountPath: /usr/bin/docker
-EOF
-```
-
 1. Use the Helm CLI to deploy the chart with your configuration set.
 
 ```shell
-./helm install -n cd stable/jenkins -f jenkins-config.yaml --version 0.8.9
+./helm install -n cd stable/jenkins -f jenkins/config.yaml --version 0.8.9
 ```
 
 1. Once that command completes, run the following command to setup port forwarding to the Spinnaker U from the Cloud Shell
