@@ -14,7 +14,7 @@ wget https://storage.googleapis.com/kubernetes-helm/helm-v$HELM_VERSION-linux-am
 tar zxfv helm-v$HELM_VERSION-linux-amd64.tar.gz
 cp linux-amd64/helm .
 ./helm init
-./helm update
+./helm repo update
 # Give tiller a chance to start up
 # TODO: Change this to polling
 sleep 180
