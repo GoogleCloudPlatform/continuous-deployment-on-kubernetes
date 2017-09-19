@@ -76,140 +76,84 @@ $ kubectl get pods
 ```
 You should see an empty response.
 
-## Create namespace and quota for Jenkins
+## Install Helm
 
-Create the `jenkins` namespace:
+In this lab, you will use Helm to install Jenkins from the Charts repository. Helm is a package manager that makes it easy to configure and deploy Kubernetes applications.  Once you have Jenkins installed, you'll be able to set up your CI/CD pipleline.
+
+1. Download and install the helm binary
 ```shell
-$ kubectl create ns jenkins
+wget https://storage.googleapis.com/kubernetes-helm/helm-v2.6.1-linux-amd64.tar.gz
 ```
 
-### Create the Jenkins Home Volume
-In order to pre-populate Jenkins with the necessary [plugins and configuration](https://cloud.google.com/solutions/configuring-jenkins-container-engine) for the rest of the tutorial, you will create
-a volume from an existing tarball of that data.
-
+1. Unzip the file to your local system:
 ```shell
-gcloud compute images create jenkins-home-image --source-uri https://storage.googleapis.com/solutions-public-assets/jenkins-cd/jenkins-home-v3.tar.gz
-gcloud compute disks create jenkins-home --image jenkins-home-image
+tar zxfv helm-v2.6.1-linux-amd64.tar.gz
+cp linux-amd64/helm .
 ```
 
-
-
-### Create a Jenkins Deployment and Service
-Here you'll create a Deployment running a Jenkins container with a persistent disk attached containing the Jenkins home directory.
-
-First, set the password for the default Jenkins user. Edit the password in `jenkins/k8s/options` with the password of your choice by replacing _CHANGE_ME_. To Generate a random password and replace it in the file, you can run:
-
+1. Initialize Helm. This ensures that the server side of Helm (Tiller) is properly installed in your cluster.
 ```shell
-$ PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
-Your password is 2UyiEo2ezG/CKnUcgPxt
+./helm init
+./helm update
 ```
 
-Now create the secret using `kubectl`:
+1. Ensure Helm is properly installed by running the following command. You should see versions appear for both the server and the client of ```v2.6.1```:
 ```shell
-$ kubectl create secret generic jenkins --from-file=jenkins/k8s/options --namespace=jenkins
-secret "jenkins" created
+./helm version
+Client: &version.Version{SemVer:"v2.6.1", GitCommit:"bbc1f71dc03afc5f00c6ac84b9308f8ecb4f39ac", GitTreeState:"clean"}
+Server: &version.Version{SemVer:"v2.6.1", GitCommit:"bbc1f71dc03afc5f00c6ac84b9308f8ecb4f39ac", GitTreeState:"clean"}
 ```
 
-Additionally you will have a service that will route requests to the controller.
+## Configure and Install Jenkins
+You will use a custom [values file](https://github.com/kubernetes/helm/blob/master/docs/chart_template_guide/values_files.md) to add the GCP specific plugin necessary to use service account credentials to reach your Cloud Source Repository.
 
-> **Note**: All of the files that define the Kubernetes resources you will be creating for Jenkins are in the `jenkins/k8s` folder. You are encouraged to take a look at them before running the create commands.
-
-The Jenkins Deployment and its two Services are defined in YAML files in`jenkins/k8s/`. Create the Deployment and Services and confirm the pod was scheduled:
-
-```shell
-$ kubectl apply -f jenkins/k8s/
-deployment "jenkins" created
-service "jenkins-ui" created
-service "jenkins-discovery" created
+1. Create your configuration file by pasting the following commands into your Cloud Shell:
+```
+cat > jenkins-config.yaml <<EOF
+Master:
+  ServiceType: ClusterIP
+  InstallPlugins:
+      - kubernetes:0.11
+      - workflow-aggregator:2.5
+      - workflow-job:2.13
+      - credentials-binding:1.12
+      - git:3.4.0
+      - google-source-plugin:0.3
+Agent:
+  volumes:
+  - type: HostPath
+    hostPath: /var/run/docker.sock
+    mountPath: /var/run/docker.sock
+  - type: HostPath
+    hostPath: /usr/bin/docker
+    mountPath: /usr/bin/docker
+EOF
 ```
 
-Check that your master pod is in the running state
+1. Use the Helm CLI to deploy the chart with your configuration set.
 
 ```shell
-$ kubectl get pods --namespace jenkins
-NAME                   READY     STATUS    RESTARTS   AGE
-jenkins-master-to8xg   1/1       Running   0          30s
+./helm install -n cd stable/jenkins -f jenkins-config.yaml --version 0.8.9
 ```
 
-Now, check that the Jenkins Service was created properly:
+1. Once that command completes, run the following command to setup port forwarding to the Spinnaker U from the Cloud Shell
+```shell
+export POD_NAME=$(kubectl get pods --namespace default -l "component=cd-jenkins-master" -o jsonpath="{.items[0].metadata.name}")
+kubectl port-forward --namespace default $POD_NAME 8080:8080 >> /dev/null &
+```
+
+## Connect to Jenkins
+
+1. The Jenkins chart will automatically create an admin password for you. To retrieve it, run:
 
 ```shell
-$ kubectl get svc --namespace jenkins
-NAME                CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
-jenkins-discovery   10.79.254.142   <none>        50000/TCP   10m
-jenkins-ui          10.79.242.143   nodes         8080/TCP    10m
+printf $(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
 ```
 
-We are using the [Kubernetes Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin) so that our builder nodes will be automatically launched as necessary when the Jenkins master requests them.
-Upon completion of their work they will automatically be turned down and their resources added back to the clusters resource pool.
+1. To get to the Spinnaker user interface, click on the Web Preview button![](../docs/img/web-preview.png) in cloud shell, then click “Preview on port 8080”
+![](docs/img/preview-8080.png)
 
-Notice that this service exposes ports `8080` and `50000` for any pods that match the `selector`. This will expose the Jenkins web UI and builder/agent registration ports within the Kubernetes cluster.
-Additionally the `jenkins-ui` services is exposed using a NodePort so that our HTTP loadbalancer can reach it.
-
-Kubernetes makes it simple to deploy an [Ingress resource](http://kubernetes.io/docs/user-guide/ingress/) to act as a public load balancer and SSL terminator.
-
-The Ingress resource is defined in `jenkins/k8s/lb/ingress.yaml`. We used the Kubernetes `secrets` API to add our certs securely to our cluster and ready for the Ingress to use.
-
-In order to create your own certs run:
-
-```shell
-$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=jenkins/O=jenkins"
-```
-
-Now you can upload them to Kubernetes as secrets:
-```shell
-$ kubectl create secret generic tls --from-file=/tmp/tls.crt --from-file=/tmp/tls.key --namespace jenkins
-```
-
-Now that the secrets have been uploaded, create the ingress load balancer. Note that the secrets must be created before the ingress, otherwise the HTTPs endpoint will not be created.
-
-```shell
-$ kubectl apply -f jenkins/k8s/lb
-```
-
-<a name="connect-to-jenkins"></a>
-### Connect to Jenkins
-
-Now find the load balancer IP address of your Ingress service (in the `Address` field). **This field may take a few minutes to appear as the load balancer is being provisioned**:
-
-```shell
-$  kubectl get ingress --namespace jenkins
-NAME      RULE      BACKEND            ADDRESS         AGE
-jenkins      -         master:8080        130.X.X.X      4m
-```
-
-The loadbalancer will begin health checks against your Jenkins instance. Once the checks go to healthy you will be able to access your Jenkins instance:
-```shell
-$  kubectl describe ingress jenkins --namespace jenkins
-Name:			jenkins
-Namespace:		jenkins
-Address:		130.211.14.253
-Default backend:	jenkins-ui:8080 (10.76.2.3:8080)
-TLS:
-  tls terminates
-Rules:
-  Host	Path	Backends
-  ----	----	--------
-Annotations:
-  https-forwarding-rule:	k8s-fws-jenkins-jenkins
-  https-target-proxy:		k8s-tps-jenkins-jenkins
-  static-ip:			k8s-fw-jenkins-jenkins
-  target-proxy:			k8s-tp-jenkins-jenkins
-  url-map:			k8s-um-jenkins-jenkins
-  backends:			{"k8s-be-32371":"HEALTHY"}   <---- LOOK FOR THIS TO BE HEALTHY
-  forwarding-rule:		k8s-fw-jenkins-jenkins
-Events:
-  FirstSeen	LastSeen	Count	From				SubobjectPath	Type		Reason	Message
-  ---------	--------	-----	----				-------------	--------	------	-------
-  2m		2m		1	{loadbalancer-controller }			Normal		ADD	jenkins/jenkins
-  1m		1m		1	{loadbalancer-controller }			Normal		CREATE	ip: 130.123.123.123 <--- This is the load balancer's IP
-```
-
-Open the load balancer's IP address in your web browser, click "Log in" in the top right and sign in with the default Jenkins username `jenkins` and the password you configured when deploying Jenkins. You can find the password in the `jenkins/k8s/options` file.
-
-> **Note**: To further secure your instance follow the steps found [here](https://wiki.jenkins-ci.org/display/JENKINS/Securing+Jenkins).
-
-
+You should now be able to log in with username `admin` and your auto generated password.
 ![](docs/img/jenkins-login.png)
 
 ### Your progress, and what's next
@@ -217,7 +161,6 @@ You've got a Kubernetes cluster managed by Google Container Engine. You've deplo
 
 * a Jenkins Deployment
 * a (non-public) service that exposes Jenkins to its slave containers
-* an Ingress resource that routes to the Jenkins service
 
 You have the tools to build a continuous deployment pipeline. Now you need a sample app to deploy continuously.
 
@@ -364,8 +307,6 @@ Navigate to your Jenkins UI and follow these steps to configure a Pipeline job (
     It will look like: https://source.developers.google.com/p/REPLACE_WITH_YOUR_PROJECT_ID/r/default
 
 1. From the Credentials dropdown select the name of new created credentials from the Phase 1.
-
-1. Under "Build Triggers", check "Build Periodically" and enter "* * * * *" in to the "Schedule" field, this will ensure that Jenkins will check our repository for changes every minute.
 
 1. Click `Save`, leaving all other options with their defaults
 
