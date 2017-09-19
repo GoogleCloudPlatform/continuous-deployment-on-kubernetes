@@ -1,4 +1,5 @@
 Master:
+  Image: jenkins/jenkins 
   ServiceType: ClusterIP
   InstallPlugins:
       - kubernetes:0.11
