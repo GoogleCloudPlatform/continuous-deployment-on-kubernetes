@@ -114,11 +114,35 @@ You will use a custom [values file](https://github.com/kubernetes/helm/blob/mast
 ./helm install -n cd stable/jenkins -f jenkins/config.yaml --version 0.8.9
 ```
 
-1. Once that command completes, run the following command to setup port forwarding to the Spinnaker U from the Cloud Shell
+1. Once that command completes, run the following command to setup port forwarding to the Jenkins UI from the Cloud Shell
 ```shell
 export POD_NAME=$(kubectl get pods --namespace default -l "component=cd-jenkins-master" -o jsonpath="{.items[0].metadata.name}")
 kubectl port-forward --namespace default $POD_NAME 8080:8080 >> /dev/null &
 ```
+
+Check that your master pod is in the running state
+
+```shell
+$ kubectl get pods
+NAME                          READY     STATUS    RESTARTS   AGE
+cd-jenkins-3388416345-pswgr   1/1       Running   0          3h
+```
+
+Now, check that the Jenkins Service was created properly:
+
+```shell
+$ kubectl get svc
+NAME               CLUSTER-IP     EXTERNAL-IP   PORT(S)     AGE
+cd-jenkins         10.35.249.67   <none>        8080/TCP    3h
+cd-jenkins-agent   10.35.248.1    <none>        50000/TCP   3h
+kubernetes         10.35.240.1    <none>        443/TCP     9h
+```
+
+We are using the [Kubernetes Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin) so that our builder nodes will be automatically launched as necessary when the Jenkins master requests them.
+Upon completion of their work they will automatically be turned down and their resources added back to the clusters resource pool.
+
+Notice that this service exposes ports `8080` and `50000` for any pods that match the `selector`. This will expose the Jenkins web UI and builder/agent registration ports within the Kubernetes cluster.
+Additionally the `jenkins-ui` services is exposed using a ClusterIP so that it is not accessible from outside the cluster.
 
 ## Connect to Jenkins
 
@@ -128,7 +152,7 @@ kubectl port-forward --namespace default $POD_NAME 8080:8080 >> /dev/null &
 printf $(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
 ```
 
-1. To get to the Spinnaker user interface, click on the Web Preview button![](../docs/img/web-preview.png) in cloud shell, then click “Preview on port 8080”
+1. To get to the Jenkins user interface, click on the Web Preview button![](../docs/img/web-preview.png) in cloud shell, then click “Preview on port 8080”
 ![](docs/img/preview-8080.png)
 
 You should now be able to log in with username `admin` and your auto generated password.
