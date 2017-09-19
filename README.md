@@ -120,6 +120,8 @@ Master:
       - git:3.4.0
       - google-source-plugin:0.3
 Agent:
+  Image: gcr.io/cloud-solutions-images/jenkins-k8s-slave
+  ImageTag: v4
   volumes:
   - type: HostPath
     hostPath: /var/run/docker.sock
