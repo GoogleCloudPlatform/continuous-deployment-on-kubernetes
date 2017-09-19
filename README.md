@@ -58,7 +58,8 @@ You'll use Google Container Engine to create and manage your Kubernetes cluster.
 
 ```shell
 $ gcloud container clusters create jenkins-cd \
-  --num-nodes 3 \
+  --num-nodes 2 \
+  --machine-type n1-standard-2 \
   --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
 ```
 
