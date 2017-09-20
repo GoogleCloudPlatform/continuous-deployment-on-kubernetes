@@ -1,0 +1,20 @@
+Master:
+  Image: jenkins/jenkins 
+  ServiceType: ClusterIP
+  InstallPlugins:
+      - kubernetes:0.11
+      - workflow-aggregator:2.5
+      - workflow-job:2.13
+      - credentials-binding:1.12
+      - git:3.4.0
+      - google-source-plugin:0.3
+Agent:
+  Image: gcr.io/cloud-solutions-images/jenkins-k8s-slave
+  ImageTag: v4
+  volumes:
+  - type: HostPath
+    hostPath: /var/run/docker.sock
+    mountPath: /var/run/docker.sock
+  - type: HostPath
+    hostPath: /usr/bin/docker
+    mountPath: /usr/bin/docker
