@@ -44,6 +44,8 @@ spec:
             secretKeyRef:
               name: jenkins
               key: options
+        - name: JAVA_OPTS
+          value: '-Xmx1400m'
         volumeMounts:
         - mountPath: /var/jenkins_home
           name: jenkins-home
