@@ -429,16 +429,16 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling canary's `/version` URL and observe it start to change in some of the requests:
 
    ```
-  1.0.0
-  1.0.0
-  1.0.0
-  1.0.0
-  2.0.0
-  2.0.0
-  1.0.0
-  1.0.0
-  1.0.0
-  1.0.0
+   1.0.0
+   1.0.0
+   1.0.0
+   1.0.0
+   2.0.0
+   2.0.0
+   1.0.0
+   1.0.0
+   1.0.0
+   1.0.0
    ```
 
    You have now rolled out that change to a subset of users.
