@@ -478,7 +478,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 ### Phase 5: Deploy a development branch
 Often times changes will not be so trivial that they can be pushed directly to the canary environment. In order to create a development environment from a long lived feature branch
 all you need to do is push it up to the Git server and let Jenkins deploy your environment. In this case you will not use a loadbalancer so you'll have to access your application using `kubectl proxy`,
-which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
+which authenticates itself with the Kubernetes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
 
 #### Deploy the development branch
 
