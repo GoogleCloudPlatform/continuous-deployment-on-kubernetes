@@ -1,3 +1,6 @@
+# Updates coming
+## This will be updated to install on a local machine without any cloud requirements. I will be modifying this project to get it working on a local Windows/Linux install (CentOS based Linux, I will work on Ubuntu later)
+
 # Lab: Build a Continuous Deployment Pipeline with Jenkins and Kubernetes
 
 For a more in depth best practices guide, go to the solution posted [here](https://cloud.google.com/solutions/jenkins-on-container-engine).
