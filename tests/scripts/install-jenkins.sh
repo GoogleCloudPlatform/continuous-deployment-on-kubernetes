@@ -11,6 +11,7 @@ gcloud compute disks create jenkins-home --image jenkins-home-image --zone $zone
 PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
 kubectl create ns jenkins
 kubectl create secret generic jenkins --from-file=jenkins/k8s/options --namespace=jenkins
+kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
 kubectl apply -f jenkins/k8s/
 kubectl get pods --namespace jenkins
 kubectl get svc --namespace jenkins
