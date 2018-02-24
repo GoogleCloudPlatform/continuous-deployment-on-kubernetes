@@ -110,6 +110,11 @@ $ kubectl create secret generic jenkins --from-file=jenkins/k8s/options --namesp
 secret "jenkins" created
 ```
 
+Add yourself as a cluster administrator in the cluster's RBAC so that you can give Jenkins permissions in the cluster:
+```shell
+$ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
+```
+
 Additionally you will have a service that will route requests to the controller.
 
 > **Note**: All of the files that define the Kubernetes resources you will be creating for Jenkins are in the `jenkins/k8s` folder. You are encouraged to take a look at them before running the create commands.
