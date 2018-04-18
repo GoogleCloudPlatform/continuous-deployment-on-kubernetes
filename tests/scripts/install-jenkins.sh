@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-gcloud compute networks create jenkins --mode auto
+gcloud compute networks create jenkins --subnet-mode auto
 gcloud container clusters create jenkins-cd \
         --network jenkins \
         --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
