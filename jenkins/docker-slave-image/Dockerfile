@@ -1,4 +1,4 @@
-FROM jenkinsci/jnlp-slave
+FROM jenkins/jnlp-slave
 MAINTAINER Vic Iglesias <viglesias@google.com>
 
 ENV CLOUDSDK_CORE_DISABLE_PROMPTS 1
