@@ -104,7 +104,6 @@ In this lab, you will use Helm to install Jenkins from the Charts repository. He
 1. Grant Tiller, the server side of Helm, the cluster-admin role in your cluster:
 
     ```shell
-    kubectl create clusterrolebinding user-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
     kubectl create serviceaccount tiller --namespace kube-system
     kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
     ```
