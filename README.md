@@ -57,10 +57,10 @@ In this section you will start your [Google Cloud Shell](https://cloud.google.co
 You'll use Google Container Engine to create and manage your Kubernetes cluster. Provision the cluster with `gcloud`:
 
 ```shell
-$ gcloud container clusters create jenkins-cd \
-  --num-nodes 2 \
-  --machine-type n1-standard-2 \
-  --scopes "https://www.googleapis.com/auth/projecthosting,cloud-platform"
+gcloud container clusters create jenkins-cd \
+--num-nodes 2 \
+--machine-type n1-standard-2 \
+--scopes "https://www.googleapis.com/auth/projecthosting,cloud-platform"
 ```
 
 Once that operation completes download the credentials for your cluster using the [gcloud CLI](https://cloud.google.com/sdk/):
@@ -93,6 +93,12 @@ In this lab, you will use Helm to install Jenkins from the Charts repository. He
     ```shell
     tar zxfv helm-v2.9.1-linux-amd64.tar.gz
     cp linux-amd64/helm .
+    ```
+
+1. Add yourself as a cluster administrator in the cluster's RBAC so that you can give Jenkins permissions in the cluster:
+    
+    ```shell
+    kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)
     ```
 
 1. Grant Tiller, the server side of Helm, the cluster-admin role in your cluster:
@@ -389,16 +395,16 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 1. Track the output for a few minutes and watch for the `kubectl --namespace=production apply...` to begin. When it starts, open the terminal that's polling canary's `/version` URL and observe it start to change in some of the requests:
 
    ```
-  1.0.0
-  1.0.0
-  1.0.0
-  1.0.0
-  2.0.0
-  2.0.0
-  1.0.0
-  1.0.0
-  1.0.0
-  1.0.0
+   1.0.0
+   1.0.0
+   1.0.0
+   1.0.0
+   2.0.0
+   2.0.0
+   1.0.0
+   1.0.0
+   1.0.0
+   1.0.0
    ```
 
    You have now rolled out that change to a subset of users.
@@ -438,7 +444,7 @@ You can use the [labels](http://kubernetes.io/docs/user-guide/labels/) `env: pro
 ### Phase 5: Deploy a development branch
 Often times changes will not be so trivial that they can be pushed directly to the canary environment. In order to create a development environment from a long lived feature branch
 all you need to do is push it up to the Git server and let Jenkins deploy your environment. In this case you will not use a loadbalancer so you'll have to access your application using `kubectl proxy`,
-which authenticates itself with the Kuberentes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
+which authenticates itself with the Kubernetes API and proxies requests from your local machine to the service in the cluster without exposing your service to the internet.
 
 #### Deploy the development branch
 

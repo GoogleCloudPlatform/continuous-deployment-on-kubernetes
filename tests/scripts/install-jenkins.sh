@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-gcloud compute networks create jenkins --mode auto
+gcloud compute networks create jenkins --subnet-mode auto
 gcloud container clusters create jenkins-cd \
         --machine-type n1-standard-2 \
         --num-nodes 2 \
