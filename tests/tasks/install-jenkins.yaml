@@ -21,7 +21,7 @@ run:
     cat > service_account.json <<EOF
     $service_account_json
     EOF
-    apt-get install -y git openssl
+    apt-get install -y git openssl wget
     gcloud auth activate-service-account --key-file=service_account.json
     gcloud config set project $project_id
     gcloud config set compute/zone $zone
