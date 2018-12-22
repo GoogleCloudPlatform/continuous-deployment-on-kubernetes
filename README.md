@@ -469,7 +469,7 @@ which authenticates itself with the Kubernetes API and proxies requests from you
    [Pipeline] echo
    To access your environment run `kubectl proxy`
    [Pipeline] echo
-   Then access your service via http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
+   Then access your service via http://localhost:8001/api/v1/namespaces/new-feature/services/gceme-frontend:80/proxy/
    [Pipeline] }
    ```
 
@@ -484,7 +484,7 @@ which authenticates itself with the Kubernetes API and proxies requests from you
 1. Return to the original shell, and access your application via localhost:
 
    ```shell
-   $ curl http://localhost:8001/api/v1/proxy/namespaces/new-feature/services/gceme-frontend:80/
+   $ curl http://localhost:8001/api/v1/namespaces/new-feature/services/gceme-frontend:80/proxy/
    ```
 
 1. You can now push code to the `new-feature` branch in order to update your development environment.
