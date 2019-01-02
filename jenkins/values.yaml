@@ -1,7 +1,7 @@
 Master:
   InstallPlugins:
     - kubernetes:1.12.6
-    - workflow-job:2.24
+    - workflow-job:2.31
     - workflow-aggregator:2.5
     - credentials-binding:1.16
     - git:3.9.1
