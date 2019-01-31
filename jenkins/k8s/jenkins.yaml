@@ -24,9 +24,12 @@ spec:
       labels:
         app: master
     spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
       containers:
       - name: master
-        image: jenkins/jenkins:2.67
+        image: jenkins/jenkins:2.162
         ports:
         - containerPort: 8080
         - containerPort: 50000
@@ -61,5 +64,4 @@ spec:
         gcePersistentDisk:
           pdName: jenkins-home
           fsType: ext4
-          partition: 1
 # [END jenkins_deployment]
