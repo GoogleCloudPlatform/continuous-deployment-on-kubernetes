@@ -4,7 +4,7 @@ Master:
     - workflow-job:2.31
     - workflow-aggregator:2.5
     - credentials-binding:1.16
-    - git:3.9.1
+    - git:3.9.3
     - google-oauth-plugin:0.7
     - google-source-plugin:0.3
   Cpu: "1"
