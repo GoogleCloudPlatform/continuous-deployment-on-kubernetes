@@ -3,7 +3,7 @@ Master:
     - kubernetes:1.12.6
     - workflow-job:2.32
     - workflow-aggregator:2.6
-    - credentials-binding:1.16
+    - credentials-binding:1.18
     - git:3.9.3
     - google-oauth-plugin:0.7
     - google-source-plugin:0.3
