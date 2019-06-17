@@ -1,12 +1,12 @@
 Master:
   InstallPlugins:
-    - kubernetes:1.12.6
-    - workflow-job:2.32
-    - workflow-aggregator:2.6
-    - credentials-binding:1.18
-    - git:3.9.3
-    - google-oauth-plugin:0.7
-    - google-source-plugin:0.3
+    - kubernetes:latest
+    - workflow-job:latest
+    - workflow-aggregator:latest
+    - credentials-binding:latest
+    - git:latest
+    - google-oauth-plugin:latest
+    - google-source-plugin:latest
   Cpu: "1"
   Memory: "3500Mi"
   JavaOpts: "-Xms3500m -Xmx3500m"
