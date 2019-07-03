@@ -85,13 +85,13 @@ In this lab, you will use Helm to install Jenkins from the Charts repository. He
 1. Download and install the helm binary
 
     ```shell
-    wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
+    wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz
     ```
 
 1. Unzip the file to your local system:
 
     ```shell
-    tar zxfv helm-v2.9.1-linux-amd64.tar.gz
+    tar zxfv helm-v2.14.1-linux-amd64.tar.gz
     cp linux-amd64/helm .
     ```
 
@@ -115,12 +115,12 @@ In this lab, you will use Helm to install Jenkins from the Charts repository. He
     ./helm update
     ```
 
-1. Ensure Helm is properly installed by running the following command. You should see versions appear for both the server and the client of ```v2.9.1```:
+1. Ensure Helm is properly installed by running the following command. You should see versions appear for both the server and the client of ```v2.14.1```:
 
     ```shell
     ./helm version
-    Client: &version.Version{SemVer:"v2.9.1", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
-    Server: &version.Version{SemVer:"v2.9.1", GitCommit:"20adb27c7c5868466912eebdf6664e7390ebe710", GitTreeState:"clean"}
+    Client: &version.Version{SemVer:"v2.14.1", GitCommit:"5270352a09c7e8b6e8c9593002a73535276507c0", GitTreeState:"clean"}
+    Server: &version.Version{SemVer:"v2.14.1", GitCommit:"5270352a09c7e8b6e8c9593002a73535276507c0", GitTreeState:"clean"}
     ```
 
 ## Configure and Install Jenkins
