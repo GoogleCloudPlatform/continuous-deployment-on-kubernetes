@@ -139,6 +139,13 @@ You will use a custom [values file](https://github.com/kubernetes/helm/blob/mast
     NAME                          READY     STATUS    RESTARTS   AGE
     cd-jenkins-7c786475dd-vbhg4   1/1       Running   0          1m
     ```
+    
+1. Configure the Jenkins service account to be able to deploy to the cluster. 
+
+    ```shell
+    $ kubectl create clusterrolebinding jenkins-deploy --clusterrole=cluster-admin --serviceaccount=default:cd-jenkins
+    clusterrolebinding.rbac.authorization.k8s.io/jenkins-deploy created
+    ```
 
 1. Run the following command to setup port forwarding to the Jenkins UI from the Cloud Shell
 
