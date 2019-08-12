@@ -7,6 +7,7 @@ master:
     - git:latest
     - google-oauth-plugin:latest
     - google-source-plugin:latest
+    - google-kubernetes-engine:latest
   resources:
     requests:
       cpu: "50m"
