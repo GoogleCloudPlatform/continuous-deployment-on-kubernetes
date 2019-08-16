@@ -150,7 +150,7 @@ You will use a custom [values file](https://github.com/kubernetes/helm/blob/mast
 1. Run the following command to setup port forwarding to the Jenkins UI from the Cloud Shell
 
     ```shell
-    export POD_NAME=$(kubectl get pods -l "component=cd-jenkins-master" -o jsonpath="{.items[0].metadata.name}")
+    export POD_NAME=$(kubectl get pods -l "app.kubernetes.io/component=jenkins-master" -o jsonpath="{.items[0].metadata.name}")
     kubectl port-forward $POD_NAME 8080:8080 >> /dev/null &
     ```
 
