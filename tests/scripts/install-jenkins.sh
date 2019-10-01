@@ -4,7 +4,8 @@ gcloud container clusters create jenkins-cd \
         --machine-type n1-standard-2 \
         --num-nodes 2 \
         --network jenkins \
-        --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
+        --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw" \
+        --cluster-version 1.12
 gcloud container clusters list
 gcloud container clusters get-credentials jenkins-cd
 kubectl cluster-info
