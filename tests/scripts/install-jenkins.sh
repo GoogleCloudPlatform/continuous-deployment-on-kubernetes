@@ -26,7 +26,7 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
 # Give tiller a chance to start up
 until ./helm version; do sleep 10;done
 
-./helm install -n cd stable/jenkins -f jenkins/values.yaml --version 0.16.6 --wait
+./helm install -n cd stable/jenkins -f jenkins/values.yaml --version 1.2.2 --wait
 
 for i in `seq 1 5`;do kubectl get pods; sleep 60;done
 
