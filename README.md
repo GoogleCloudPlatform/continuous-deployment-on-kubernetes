@@ -60,7 +60,7 @@ You'll use Google Container Engine to create and manage your Kubernetes cluster.
 gcloud container clusters create jenkins-cd \
 --num-nodes 2 \
 --machine-type n1-standard-2 \
---scopes "https://www.googleapis.com/auth/source.read_only,cloud-platform" \
+--scopes "https://www.googleapis.com/auth/source.read_write,cloud-platform" \
 --cluster-version 1.12
 ```
 
