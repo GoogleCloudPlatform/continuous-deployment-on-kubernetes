@@ -13,11 +13,16 @@
 # limitations under the License.
 
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: app/v1
 metadata:
   name: gceme-backend-dev
 spec:
   replicas: 1
+  selector:
+      matchLabels:
+          app: gceme
+          role: backend
+          env: dev
   template:
     metadata:
       name: backend

@@ -18,6 +18,11 @@ metadata:
   name: gceme-backend-production
 spec:
   replicas: 1
+  selector:
+      matchLabels:
+          app: gceme
+          role: backend
+          env: production
   template:
     metadata:
       name: backend
