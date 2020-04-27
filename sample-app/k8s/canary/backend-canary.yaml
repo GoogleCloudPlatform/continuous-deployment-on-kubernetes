@@ -13,11 +13,16 @@
 # limitations under the License.
 
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: gceme-backend-canary
 spec:
   replicas: 1
+  selector:
+      matchLabels:
+          app: gceme
+          role: backend
+          env: canary
   template:
     metadata:
       name: backend
