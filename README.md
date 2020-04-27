@@ -2,11 +2,6 @@
 
 For a more in depth best practices guide, go to the solution posted [here](https://cloud.google.com/solutions/jenkins-on-container-engine).
 
-| Test          |   Result      |
-| ------------- |---------------|
-| Tutorial      | ![badge](https://concourse.dev.vicnastea.io/api/v1/teams/main/pipelines/cd-on-k8s-regression/jobs/test-tutorial/badge) |
-| Sample App    | ![badge](https://concourse.dev.vicnastea.io/api/v1/teams/main/pipelines/cd-on-k8s-regression/jobs/build-sample-app/badge)      |
-
 ## Introduction
 
 This guide will take you through the steps necessary to continuously deliver
@@ -314,10 +309,8 @@ CI/CD pipleline.
 
 ## Configure and Install Jenkins
 
-You will use a custom
-[values file](https://github.com/kubernetes/helm/blob/master/docs/chart_template_guide/values_files.md)
-to add the GCP specific plugin necessary to use service account credentials to
-reach your Cloud Source Repository.
+You will use a custom [values file](https://github.com/helm/charts/blob/master/stable/jenkins/values.yaml)
+to add the GCP specific plugin necessary to use service account credentials to reach your Cloud Source Repository.
 
 1. Use the Helm CLI to deploy the chart with your configuration set.
 
