@@ -253,7 +253,7 @@ CI/CD pipleline.
     ```
 
 1. Ensure Helm is properly installed by running the following command. You
-   should see versions `v3.2.1` appear for both the server and the client:
+   should see version `v3.2.1` appear:
 
     ```shell
     ./helm version
