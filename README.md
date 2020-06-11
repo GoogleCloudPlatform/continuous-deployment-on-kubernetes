@@ -173,7 +173,7 @@ and clone the lab code repository to it.
    gcloud container clusters create jenkins-cd \
      --num-nodes 2 \
      --machine-type n1-standard-2 \
-     --cluster-version 1.13 \
+     --cluster-version 1.15 \
      --service-account "jenkins-sa@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com"
    ```
 
@@ -181,7 +181,7 @@ and clone the lab code repository to it.
 
    ```output
    NAME        LOCATION    MASTER_VERSION  MASTER_IP     MACHINE_TYPE  NODE_VERSION   NUM_NODES  STATUS
-   jenkins-cd  us-east1-d  1.13.10-gke.7   35.229.29.69  n1-standard-2 1.13.10-gke.7  2          RUNNING
+   jenkins-cd  us-east1-d  1.15.11-gke.15   35.229.29.69  n1-standard-2 1.15.11-gke.15  2          RUNNING
    ```
 
 1. Once that operation completes, retrieve the credentials for your cluster.
@@ -236,62 +236,24 @@ CI/CD pipleline.
 1. Download and install the helm binary
 
     ```shell
-    wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.3-linux-amd64.tar.gz
+    wget https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz
     ```
 
 1. Unzip the file to your local system:
 
     ```shell
-    tar zxfv helm-v2.14.3-linux-amd64.tar.gz
+    tar zxfv helm-v3.2.1-linux-amd64.tar.gz
     cp linux-amd64/helm .
     ```
 
-1. Grant Tiller, the server side of Helm, the cluster-admin role in your cluster:
+1. Add the official stable repository.
 
     ```shell
-    kubectl create serviceaccount tiller --namespace kube-system
-    kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-    ```
-
-    Output (do not copy):
-
-    ```output
-    serviceaccount/tiller created
-    clusterrolebinding.rbac.authorization.k8s.io/tiller-admin-binding created
-    ```
-
-1. Initialize Helm. This ensures that the server side of Helm (Tiller) is
-   properly installed in your cluster.
-
-    ```shell
-    ./helm init --service-account=tiller
-    ```
-
-    Output (do not copy):
-
-    ```output
-    ...
-    Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
-    ...
-    ```
-
-1. Update your local repo with the latest charts.
-
-    ```shell
-    ./helm repo update
-    ```
-
-    Output (do not copy):
-
-    ```output
-    Hang tight while we grab the latest from your chart repositories...
-    ...Skip local chart repository
-    ...Successfully got an update from the "stable" chart repository
-    Update Complete.
+    ./helm repo add stable https://kubernetes-charts.storage.googleapis.com
     ```
 
 1. Ensure Helm is properly installed by running the following command. You
-   should see versions `v2.14.3` appear for both the server and the client:
+   should see version `v3.2.1` appear:
 
     ```shell
     ./helm version
@@ -300,12 +262,8 @@ CI/CD pipleline.
     Output (do not copy):
 
     ```output
-    Client: &version.Version{SemVer:"v2.14.3", GitCommit:"0e7f3b6637f7af8fcfddb3d2941fcc7cbebb0085", GitTreeState:"clean"}
-    Server: &version.Version{SemVer:"v2.14.3", GitCommit:"0e7f3b6637f7af8fcfddb3d2941fcc7cbebb0085", GitTreeState:"clean"}
+    version.BuildInfo{Version:"v3.2.1", GitCommit:"fe51cd1e31e6a202cba7dead9552a6d418ded79a", GitTreeState:"clean", GoVersion:"go1.13.10"}
     ```
-
-    > If you don't see the Server version immediately, wait a few seconds and
-    > try again.
 
 ## Configure and Install Jenkins
 
@@ -315,7 +273,7 @@ to add the GCP specific plugin necessary to use service account credentials to r
 1. Use the Helm CLI to deploy the chart with your configuration set.
 
     ```shell
-    ./helm install -n cd stable/jenkins -f jenkins/values.yaml --version 1.7.3 --wait
+    ./helm install cd-jenkins -f jenkins/values.yaml stable/jenkins --version 1.7.3 --wait
     ```
 
     Output (do not copy):
