@@ -1,4 +1,4 @@
-master:
+controler:
   installPlugins:
     - kubernetes:latest
     - workflow-job:latest
