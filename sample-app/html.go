@@ -34,7 +34,7 @@ const (
 <div class="col s8">
 
 
-<div class="card blue">
+<div class="card orange">
 <div class="card-content white-text">
 <div class="card-title">Backend that serviced this request</div>
 </div>
@@ -78,7 +78,7 @@ const (
 </div>
 </div>
 
-<div class="card blue">
+<div class="card orange">
 <div class="card-content white-text">
 <div class="card-title">Proxy that handled this request</div>
 </div>
