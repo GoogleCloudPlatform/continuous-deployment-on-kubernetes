@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: gcr.io/cloud-solutions-images/gceme:1.0.0
+        image: corelab/gceme:1.0.0
         resources:
           limits:
             memory: "500Mi"
