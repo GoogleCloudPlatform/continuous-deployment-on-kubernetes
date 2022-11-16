@@ -22,7 +22,7 @@ steps:
     args: 
       - '-c'
       - |
-          docker build -t gcr.io/terraform-tae/gceme:v1 ..
+          docker build -t gcr.io/terraform-tae/gceme:v1 ./sample-app/ 
 
 
 
