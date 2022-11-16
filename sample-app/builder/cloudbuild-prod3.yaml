@@ -36,7 +36,7 @@ steps:
     args: 
       - '-c'
       - |
-          docker push gcr.io/terraform-tae/gceme:$1.0.1
+          docker push gcr.io/terraform-tae/gceme:1.0.1
 
 
 
