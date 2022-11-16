@@ -78,7 +78,7 @@ const (
 </div>
 </div>
 
-<div class="card green">
+<div class="card blue">
 <div class="card-content white-text">
 <div class="card-title">Proxy that handled this request</div>
 </div>
