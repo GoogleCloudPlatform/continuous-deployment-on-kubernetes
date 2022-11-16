@@ -22,7 +22,7 @@ steps:
     args: 
       - '-c'
       - |
-          docker build -t gcr.io/$PROJECT_ID/gceme:$TAG_NAME .
+          docker build -t gcr.io/$(PROJECT_ID)/gceme:$(TAG_NAME) .
 
 
 
