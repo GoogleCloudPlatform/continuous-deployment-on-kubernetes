@@ -55,7 +55,7 @@ steps:
           PROJECT=$$(gcloud config get-value core/project)
           ZONE=${_CLOUDSDK_COMPUTE_ZONE}
           export PROJECT_ID=$PROJECT_ID
-          export CLUSTER=gogle-cluster
+          export CLUSTER=terraform-tae-gke
           export ZONE=asia-northeast3
 
           gcloud container clusters get-credentials "$${CLUSTER}" \
