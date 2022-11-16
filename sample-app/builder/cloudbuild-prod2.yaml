@@ -36,7 +36,7 @@ steps:
     args: 
       - '-c'
       - |
-          docker push gcr.io/$PROJECT_ID/gceme:$TAG_NAME
+          docker push gcr.io/$(PROJECT_ID)/gceme:$(TAG_NAME)
 
 
 
@@ -61,7 +61,7 @@ steps:
 
 
 
-          sed -i 's|gcr.io/cloud-solutions-images/gceme:.*|gcr.io/$PROJECT_ID/gceme:$TAG_NAME|' ./k8s/production/*.yaml
+          sed -i 's|gcr.io/cloud-solutions-images/gceme:.*|gcr.io/$(PROJECT_ID)/gceme:$(TAG_NAME)|' ./k8s/production/*.yaml
           
           kubectl get ns production || kubectl create ns production
           kubectl apply --namespace production --recursive -f k8s/production
