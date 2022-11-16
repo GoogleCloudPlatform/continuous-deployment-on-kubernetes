@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: gcr.io/cloud-solutions-images/gceme:1.0.0
+        image: corelab/gceme:9f401e8-dirty-83a754b
         resources:
           limits:
             memory: "500Mi"
