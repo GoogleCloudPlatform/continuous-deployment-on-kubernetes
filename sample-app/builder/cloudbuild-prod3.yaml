@@ -64,7 +64,7 @@ steps:
 
 
 
-          sed -i 's|gcr.io/cloud-solutions-images/gceme:.*|gcr.io/$PROJECT_ID/gceme:$TAG_NAME|' ./sample-app/k8s/production/*.yaml
+          sed -i 's|corelab/gceme:9f401e8-dirty-83a754b|gcr.io/$PROJECT_ID/gceme:$TAG_NAME|' ./sample-app/k8s/production/*.yaml
           
           kubectl get ns production || kubectl create ns production
           kubectl apply --namespace production --recursive -f ./sample-app/k8s/production
