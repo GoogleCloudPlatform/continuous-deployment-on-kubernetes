@@ -231,7 +231,7 @@ and clone the lab code repository to it.
 In this lab, you will use Helm to install Jenkins with a stable _chart_.  Helm
 is a package manager that makes it easy to configure and deploy Kubernetes
 applications.  Once you have Jenkins installed, you'll be able to set up your
-CI/CD pipleline.
+CI/CD pipeline.
 
 1. Download and install the helm binary
 
