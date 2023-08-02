@@ -173,7 +173,6 @@ and clone the lab code repository to it.
    gcloud container clusters create jenkins-cd \
      --num-nodes 2 \
      --machine-type n1-standard-2 \
-     --cluster-version 1.15 \
      --service-account "jenkins-sa@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com"
    ```
 
@@ -236,24 +235,25 @@ CI/CD pipleline.
 1. Download and install the helm binary
 
     ```shell
-    wget https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz
+    wget https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz
     ```
 
 1. Unzip the file to your local system:
 
     ```shell
-    tar zxfv helm-v3.2.1-linux-amd64.tar.gz
+    tar zxfv helm-v3.12.2-linux-amd64.tar.gz
     cp linux-amd64/helm .
     ```
 
 1. Add the official stable repository.
 
     ```shell
-    ./helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    ./helm repo add stable https://charts.jenkins.io
+    ./helm repo update
     ```
 
 1. Ensure Helm is properly installed by running the following command. You
-   should see version `v3.2.1` appear:
+   should see version `v3.12.2` appear:
 
     ```shell
     ./helm version
@@ -262,7 +262,8 @@ CI/CD pipleline.
     Output (do not copy):
 
     ```output
-    version.BuildInfo{Version:"v3.2.1", GitCommit:"fe51cd1e31e6a202cba7dead9552a6d418ded79a", GitTreeState:"clean", GoVersion:"go1.13.10"}
+    helm version
+    version.BuildInfo{Version:"v3.12.2", GitCommit:"414ff28d4029ae8c8b05d62aa06c7fe3dee2bc58", GitTreeState:"clean", GoVersion:"go1.20.5"}
     ```
 
 ## Configure and Install Jenkins
@@ -273,7 +274,7 @@ to add the GCP specific plugin necessary to use service account credentials to r
 1. Use the Helm CLI to deploy the chart with your configuration set.
 
     ```shell
-    ./helm install cd-jenkins -f jenkins/values.yaml stable/jenkins --version 1.7.3 --wait
+    ./helm install cd-jenkins -f jenkins/values.yaml jenkins/jenkins --wait
     ```
 
     Output (do not copy):
@@ -312,7 +313,7 @@ to add the GCP specific plugin necessary to use service account credentials to r
 1. Set up port forwarding to the Jenkins UI, from Cloud Shell:
 
     ```shell
-    export JENKINS_POD_NAME=$(kubectl get pods -l "app.kubernetes.io/component=jenkins-master" -o jsonpath="{.items[0].metadata.name}")
+    export JENKINS_POD_NAME=$(kubectl get pods -l "app.kubernetes.io/component=jenkins-controller" -o jsonpath="{.items[0].metadata.name}")
     kubectl port-forward $JENKINS_POD_NAME 8080:8080 >> /dev/null &
     ```
 
