@@ -249,7 +249,7 @@ CI/CD pipleline.
 1. Add the official stable repository.
 
     ```shell
-    ./helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    ./helm repo add stable https://charts.helm.sh/stable
     ```
 
 1. Ensure Helm is properly installed by running the following command. You
