@@ -8,7 +8,7 @@ This guide will take you through the steps necessary to continuously deliver
 your software to end users by leveraging [Google Container Engine](https://cloud.google.com/container-engine/)
 and [Jenkins](https://jenkins.io) to orchestrate the software delivery pipeline.
 If you are not familiar with basic Kubernetes concepts, have a look at
-[Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/).
+[Kubernetes 101](https://kubernetes.io/docs/tutorials/kubernetes-basics/).
 
 In order to accomplish this goal you will use the following Jenkins plugins:
   - [Jenkins Kubernetes Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin) - start Jenkins build executor containers in the Kubernetes cluster when builds are requested, terminate those containers when builds complete, freeing resources up for the rest of the cluster
