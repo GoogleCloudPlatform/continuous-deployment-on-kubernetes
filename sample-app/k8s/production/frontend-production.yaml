@@ -17,7 +17,7 @@ apiVersion: apps/v1
 metadata:
   name: gceme-frontend-production
 spec:
-  replicas:
+  replicas: 1
   selector:
       matchLabels:
           app: gceme
@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: gcr.io/cloud-solutions-images/gceme:1.0.0
+        image: corelab/gceme:9f401e8-dirty-83a754b
         resources:
           limits:
             memory: "500Mi"
