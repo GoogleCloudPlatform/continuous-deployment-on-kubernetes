@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "dataflow-bq-321500",
+  "private_key_id": "e85084148f484c7d2bad6d31b2699681f81d7d99",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjPouDsijNwp78\nQe1zg/k+FMGzAGsWte/m+B6LHtcso1/23S1hfzRGa0tOx8pwPIQQXd9FsgreyJlk\nEFhGXQ8FxNG7Ff1SkqLiLjaMCXITnqar31b5R6penGZq7Ks+/abEJk2HyTfHKUQw\nsGiOGQYhccteVUzlqllxmXTTrUmFQvAqIXY6kX3poDeiEZTNzdKr4iVh4RemZljT\nES8gjQXenYKHcNYh/SbO+jC46cvatEFuvVKbBP8vIv03eGya2/WdYnvEJ4kKF5vl\nW74etMbACBXjOugabJ6OOTOX6PPOLhZe9zdXjxEqDhR/uvOGnbFowa5PuFfRNqaR\nfRi6rGbxAgMBAAECggEAByT6XafrNcAmDaPEBOl6e89UP+WNikepqXnj+lI9+Bfp\nYAhDj3AOBWP2PosrbriTThURq770T1ZHslOtzVyOxwGbbTzz4oyE4PHFVOEn8zhf\nEogaihvrFqtxJw5XG1FmHlEP1RjHHmoNsDTUSp3JQSb2D9mbXTTUp85fyNDddh3L\nL/2X/DRDmbIm1blstHkCaqfofY1N3IGZQWFzHOwqut53MCd51JVItGTjNPNskhzu\nYgAFt6ErH6o2dWJaJcQyU9NCIvP+2M+8pAtdvus+Ovtrou7BbfR734bHjxNyCPKP\ntirR/n9QX8qJrqz9ohxKgHxZbOja9kPNkmrf1B3QgQKBgQDZao9CY/fz7iAO8onU\nLzWpYcMW+We2JOGHvqwF7+yhyQ8EWKU/STSgXcNUnUQT8cAMf7fUCCEZVDH/jVay\nuqTelOj9RkoH79UMUmJl9Iji5xsO7bMWezcHOlob5JuOMYfsLaEjactH4qrPr+cP\ncM6AwD/Y41MH/eR3D3p3p16toQKBgQDANuZNpoPHWPLHhcJPCCldEFh6QGr5aMEy\nAqNIFTkiR3nqPDaVKwUOwqZCySS+73JpMozCo1Ku0sRadO54PfHdqez39+3mbAfW\nK6QD0UbDoRWr3f/rzINS0zMYKNkijD2AXlEh2KEC55UedWYgdLErMGh+ZqLc/aAp\npGCio14XUQKBgQCseYJIcrHDCwbXlMSOVR1Gz81KLnR95Ggdnb8tvpWECtIk6oW8\n3MAo7/kC6PeWstNdlvwn8oL/avF2/5LlmncsNAlY0yfrf/ENI1X397OX/SpT/3Fw\nxjJzQ3E0a3iTputjCxen1kdzMXe75plwgFbxgJGl50B5OIrDgL3wqg/LwQKBgHZR\nFOCVcCaEbSU+A8aMOpHrntrZzj9qKQn0r7eOQNYF81io6dxWV82nKZqQoArb76wr\njpO83wd3+5/GvIfNcZVFpPVaatlchFJkGJi0+H8xJ9rcU009XVTdZmUnt8jZVH4x\nEHXqF+pmzNar40p1Kh1wtdGgsf2gLTeU1FsofqGRAoGAezDI0dxuwb5260tvNcuQ\nSg3MsIawB9XhaPWfeHfOs6BX9yb+DxWiTclRxPAy8jrXIjJ88ERiuomaJt6moq6F\nMF82niGbH+dgelBHQ1UjCT8iWe6cIGiR019LRN11QC60PVy8U7xd5rTNlI0hk0J1\nBz1D5Fm10ph7IL+AFrWDil0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "jenkins-sa@dataflow-bq-321500.iam.gserviceaccount.com",
+  "client_id": "108782650315848106249",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/jenkins-sa%40dataflow-bq-321500.iam.gserviceaccount.com"
+}
